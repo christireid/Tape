@@ -30,6 +30,7 @@ export default tseslint.config(
         getComputedStyle: 'readonly',
         fetch: 'readonly',
         process: 'readonly',
+        Buffer: 'readonly',
       },
     },
     rules: {
