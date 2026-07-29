@@ -153,7 +153,7 @@ export function OrderTicket({ index, side, setSide }: Props): React.JSX.Element 
 
       {stale && (
         <div className="alert" role="alert">
-          Feed is {tele.health}. Order entry disabled — data age {(tele.dataAgeMs / 1000).toFixed(1)}s.
+          Feed is {tele.health}. Order entry disabled. Data age {(tele.dataAgeMs / 1000).toFixed(1)}s.
         </div>
       )}
 

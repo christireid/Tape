@@ -149,7 +149,7 @@ export function ThroughputChart(): React.JSX.Element {
         </svg>
       </div>
       <div className="spark-caption">
-        Conflation {t.conflationRatio.toFixed(1)}:1 — {Math.round(t.msgsInPerSec).toLocaleString()} in over{' '}
+        Conflation {t.conflationRatio.toFixed(1)}:1 · {Math.round(t.msgsInPerSec).toLocaleString()} in over{' '}
         {Math.round(t.rowsOutPerSec).toLocaleString()} out
       </div>
     </div>

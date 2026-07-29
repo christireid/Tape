@@ -60,7 +60,7 @@ export function DepthLadder({ index }: Props): React.JSX.Element {
 export function SessionRange({ index }: Props): React.JSX.Element {
   useSlowTick();
   const row = store.rowByIndex(index);
-  if (!row) return <div className="range muted">—</div>;
+  if (!row) return <div className="range muted">·</div>;
   const lo = Math.min(row.low, row.prevClose, row.last);
   const hi = Math.max(row.high, row.prevClose, row.last);
   const span = Math.max(hi - lo, row.tickSize);

@@ -76,7 +76,7 @@ function Trend(): React.JSX.Element {
         <span className="brand-mark" style={{ fontSize: 'var(--fs-22)' }}>
           TAPE
         </span>
-        <span className="muted">performance history — committed bench runs</span>
+        <span className="muted">performance history · committed bench runs</span>
         <a href="/" style={{ marginLeft: 'auto', color: 'var(--accent)' }}>
           ← app
         </a>
@@ -97,9 +97,24 @@ function Trend(): React.JSX.Element {
           <path d={path(series[0]!.points)} fill="none" stroke="var(--accent)" strokeWidth="2" />
           <path d={path(series[1]!.points)} fill="none" stroke="var(--status-positive)" strokeWidth="2" />
         </svg>
-        <div className="spark-caption" style={{ display: 'flex', gap: 'var(--sp-16)' }}>
-          <span style={{ color: 'var(--accent)' }}>— AG Grid</span>
-          <span style={{ color: 'var(--status-positive)' }}>— Virtual</span>
+        <div
+          className="spark-caption"
+          style={{ display: 'flex', gap: 'var(--sp-16)', alignItems: 'center' }}
+        >
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-6)' }}>
+            <span
+              aria-hidden="true"
+              style={{ width: 16, height: 2, background: 'var(--accent)', borderRadius: 'var(--r-2)' }}
+            />
+            AG Grid
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-6)' }}>
+            <span
+              aria-hidden="true"
+              style={{ width: 16, height: 2, background: 'var(--status-positive)', borderRadius: 'var(--r-2)' }}
+            />
+            Virtual
+          </span>
           <span className="muted">y-max {max.toFixed(0)} ms · one point per committed run</span>
         </div>
       </section>

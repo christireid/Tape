@@ -33,7 +33,7 @@ export function PositionsPanel(): React.JSX.Element {
             {positions.length === 0 && (
               <tr>
                 <td colSpan={5} className="muted" style={{ textAlign: 'left' }}>
-                  No positions — place an order with <kbd>B</kbd> / <kbd>S</kbd>
+                  No positions. Place an order with <kbd>B</kbd> / <kbd>S</kbd>
                 </td>
               </tr>
             )}
@@ -96,7 +96,7 @@ export function OrdersPanel(): React.JSX.Element {
             {orders.length === 0 && (
               <tr>
                 <td colSpan={6} className="muted" style={{ textAlign: 'left' }}>
-                  No orders yet
+                  No orders yet. Set a side with <kbd>B</kbd> / <kbd>S</kbd>, submit from the ticket
                 </td>
               </tr>
             )}
