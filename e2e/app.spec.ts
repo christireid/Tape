@@ -65,6 +65,37 @@ test('fat-finger gate and optimistic order lifecycle', async ({ page }) => {
   expect(filled).toBeTruthy();
 });
 
+test('B and S set the ticket side from the keyboard', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Synthetic data')).toBeVisible();
+  await page.keyboard.press('s');
+  await expect(page.getByRole('button', { name: 'Sell', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.keyboard.press('b');
+  await expect(page.getByRole('button', { name: 'Buy', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
+
+test('shortcuts are suppressed while a text input has focus', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Synthetic data')).toBeVisible();
+  const themeBefore = await page.evaluate(() =>
+    document.documentElement.getAttribute('data-theme'),
+  );
+  const filter = page.getByLabel('Filter blotter');
+  await filter.click();
+  await filter.pressSequentially('td'); // t = cycle theme, d = density — must NOT fire
+  await expect(filter).toHaveValue('td');
+  const themeAfter = await page.evaluate(() =>
+    document.documentElement.getAttribute('data-theme'),
+  );
+  expect(themeAfter).toBe(themeBefore);
+});
+
 test('disconnect is detected and recovers', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Synthetic data')).toBeVisible();

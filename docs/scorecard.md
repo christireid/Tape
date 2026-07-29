@@ -28,17 +28,17 @@ interaction pass: **0**. Gaps in steady state: **0**.
 Axe-core WCAG 2 A + AA: **0 violations** across dark/compact, dark/comfortable, light/compact,
 light/comfortable, hc/compact, hc/comfortable.
 
-## Behavioural checks — 9 / 9
+## Behavioural checks — 9 / 9, each mechanically tested
 
-1. Command palette opens focused, arrow-navigates, executes, restores focus.
-2. `/` focuses the blotter filter.
-3. `B` / `S` set the order side without the mouse.
-4. `D` toggles density; `T` cycles theme — no grid remount.
-5. `G` / `X` inject a sequence gap / disconnect from the keyboard.
-6. Help sheet reachable via `?` and the toolbar.
-7. Shortcuts suppressed while a text input has focus.
-8. Order placed through the gates; optimistic lifecycle confirmed by the worker.
-9. Disconnect detected, banner shown, recovery leaves the gap counter at 0.
+1. Command palette opens focused, arrow-navigates, executes, restores focus (audit).
+2. `/` focuses the blotter filter (audit).
+3. `B` / `S` set the order side without the mouse (e2e).
+4. `D` toggles density; `T` cycles theme, no grid remount (audit + conformance).
+5. `G` / `X` inject a sequence gap / disconnect from the keyboard (audit).
+6. Help sheet reachable via `?` and the toolbar (audit).
+7. Shortcuts suppressed while a text input has focus (e2e).
+8. Order placed through the gates; optimistic lifecycle confirmed by the worker (e2e).
+9. Disconnect detected, banner shown, recovery leaves the gap counter at 0 (e2e, both transports).
 
 ## Design conformance — 9 / 9
 
