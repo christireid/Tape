@@ -61,6 +61,12 @@ Built from spec v1.1. First public milestone (spec §9, milestone 5+ complete).
   engine flash parity, copy hygiene in visible UI strings.
 - The hand-built engine's first dedicated axe audit found and fixed a real
   `aria-required-children` defect; the both-engine axe gate is permanent.
+- **Committed WebSocket e2e tests** (server spawned per-run, CI-safe) plus e2e
+  for the last two behavioural checks; all nine are now mechanically tested.
+- **Cell-flash fade-out tokenized**: the fade phase previously fell back to the
+  legacy stylesheet's default highlight, which failed AA under high-contrast
+  white text mid-fade; it now fades token-tint → transparent over the 240 ms
+  motion token (reduced-motion aware) in place of the library's 1000 ms.
 
 ### Known open items
 
