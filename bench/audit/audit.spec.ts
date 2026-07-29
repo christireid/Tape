@@ -48,6 +48,17 @@ test('accessibility — zero axe violations on load', async ({ page }) => {
   expect(results.violations.map((v) => v.id)).toEqual([]);
 });
 
+test('accessibility — zero axe violations on the hand-built engine', async ({ page }) => {
+  // The virtualizer's accessibility surface is hand-written (ADR 004), so the
+  // README's claim that the axe pass was re-run against it is backed here.
+  await page.goto('/');
+  await expect(page.getByText('Synthetic data')).toBeVisible();
+  await page.getByRole('button', { name: 'Virtual', exact: true }).click();
+  await page.waitForTimeout(1200);
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(results.violations.map((v) => v.id)).toEqual([]);
+});
+
 test('keyboard — palette opens, navigates, executes; filter focuses', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Synthetic data')).toBeVisible();

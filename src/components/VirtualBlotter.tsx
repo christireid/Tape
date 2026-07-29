@@ -110,6 +110,9 @@ export function VirtualBlotter({ onSelect, filter, rowHeight, generation }: Prop
       for (const col of COLUMNS) {
         const span = document.createElement('span');
         span.className = cellClassFor(col);
+        // The a11y surface is hand-written (ADR 004): every cell must carry
+        // its grid role or role="grid" fails aria-required-children.
+        span.setAttribute('role', 'gridcell');
         span.style.width = `${col.width}px`;
         span.style.flex = `0 0 ${col.width}px`;
         if (col.id === 'changebar') {
@@ -161,7 +164,10 @@ export function VirtualBlotter({ onSelect, filter, rowHeight, generation }: Prop
           </div>
         ))}
       </div>
-      <div style={{ height: rowVirtualizer.getTotalSize(), width: totalWidth, position: 'relative' }}>
+      <div
+        role="rowgroup"
+        style={{ height: rowVirtualizer.getTotalSize(), width: totalWidth, position: 'relative' }}
+      >
         {rowVirtualizer.getVirtualItems().map((vi) => {
           const row = view[vi.index];
           if (!row) return null;
