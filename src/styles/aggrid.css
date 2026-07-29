@@ -1,0 +1,128 @@
+/* AG Grid binding. The grid runs in legacy-theme mode (theme: 'legacy') so its
+   look is driven entirely by --ag-* custom properties bound to the semantic
+   token layer here. Theme and density switches then propagate through CSS —
+   the grid is never re-instantiated on a switch (spec §6.2). */
+
+.grid-host.ag-theme-quartz {
+  --ag-background-color: var(--surface-base);
+  --ag-foreground-color: var(--text-primary);
+  --ag-header-background-color: var(--surface-raised);
+  --ag-header-foreground-color: var(--text-muted);
+  --ag-odd-row-background-color: var(--surface-row-alt);
+  --ag-row-hover-color: var(--surface-row-hover);
+  --ag-selected-row-background-color: var(--surface-row-selected);
+  --ag-border-color: var(--border-subtle);
+  --ag-row-border-color: var(--border-subtle);
+  --ag-header-column-separator-color: var(--border-subtle);
+  --ag-secondary-foreground-color: var(--text-muted);
+  --ag-input-border-color: var(--border-default);
+  --ag-control-panel-background-color: var(--surface-raised);
+  --ag-range-selection-border-color: var(--accent);
+
+  --ag-row-height: var(--row-height);
+  --ag-header-height: var(--header-height);
+  --ag-font-size: var(--grid-font-size);
+  --ag-font-family: var(--font-ui);
+  --ag-cell-horizontal-padding: var(--cell-pad-x);
+  --ag-borders: none;
+  --ag-border-radius: 0;
+  --ag-wrapper-border-radius: 0;
+}
+
+/* AG Grid v36's runtime-injected theme stylesheet wins on source order and does
+   not read --ag-background-color for structural backgrounds, so the token layer
+   is enforced with explicit overrides. Colour still comes from the semantic
+   tokens, so theme and density switches remain pure-CSS with no remount. */
+.grid-host .ag-root-wrapper,
+.grid-host .ag-root-wrapper-body,
+.grid-host .ag-body,
+.grid-host .ag-center-cols-viewport,
+.grid-host .ag-body-viewport {
+  background-color: var(--surface-base) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+.grid-host .ag-header,
+.grid-host .ag-header-viewport,
+.grid-host .ag-pinned-left-header,
+.grid-host .ag-header-cell {
+  background-color: var(--surface-raised) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border-subtle) !important;
+}
+.grid-host .ag-row {
+  background-color: var(--surface-base) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+.grid-host .ag-row-odd {
+  background-color: var(--surface-row-alt) !important;
+}
+.grid-host .ag-row-hover {
+  background-color: var(--surface-row-hover) !important;
+}
+.grid-host .ag-row-selected,
+.grid-host .ag-row-selected .ag-cell {
+  background-color: var(--surface-row-selected) !important;
+}
+.grid-host .ag-cell {
+  color: var(--text-primary) !important;
+  border-color: transparent !important;
+}
+.grid-host .ag-pinned-left-cols-container .ag-cell,
+.grid-host .ag-cell.ag-column-first {
+  background-color: inherit;
+}
+/* Cell-change flash: a dark, token-based tint so the green/red glyphs keep
+   their contrast during the flash (the default light-quartz teal fails AA). */
+.grid-host .ag-cell-data-changed {
+  background-color: color-mix(in srgb, var(--accent) 24%, var(--surface-base)) !important;
+}
+
+.grid-host .ag-cell.num,
+.grid-host .ag-cell-value.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* numeric cells right-aligned, mono figures */
+.grid-host .ag-right-aligned-cell {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.grid-host .ag-header-cell-text {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--fs-10);
+}
+
+/* change-bar cell: our renderer writes two nodes directly, no React */
+.grid-host .cb {
+  position: relative;
+  height: 60%;
+  top: 20%;
+  background: var(--surface-raised);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.grid-host .cb-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+}
+.grid-host .cb-mid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border-strong);
+}
+
+.grid-host .sym-cell {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}

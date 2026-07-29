@@ -1,0 +1,69 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * *' # nightly bench
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Unit + component tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+
+  quality:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Design conformance
+        run: npm run conformance
+      - name: Accessibility + keyboard + soak (verify)
+        run: npm run verify
+      - name: Interaction pass + a11y + perf (audit)
+        run: npm run audit
+      - name: End-to-end
+        run: npm run e2e
+
+  bench:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Benchmark matrix (both engines)
+        run: npm run bench
+      - name: Commit results
+        run: |
+          git config user.name "tape-bench"
+          git config user.email "bench@tape.local"
+          git add bench/results/*.json || true
+          git commit -m "chore(bench): nightly matrix results" || echo "no changes"
+          git push || echo "push skipped"

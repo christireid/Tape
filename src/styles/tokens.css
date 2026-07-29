@@ -1,0 +1,212 @@
+/* Three-tier token layer. Primitives are never referenced outside this file
+   (enforced by bench/conformance.mjs). Semantic tokens carry meaning; component
+   tokens are keyed by density. Three themes x two densities, all switched by
+   data-theme / data-density on <html> — no grid remount on switch. */
+
+:root {
+  /* ── Tier 1 · primitives — raw values, no meaning ─────────────────────── */
+  --ink-0: #05070a;
+  --ink-1: #0e1116;
+  --ink-2: #151a21;
+  --ink-3: #1b212a;
+  --ink-4: #232b36;
+  --ink-5: #2d3542;
+  --ink-6: #3a4453;
+  --ink-7: #4c5768;
+  --ink-8: #626d7c;
+  --ink-9: #8b95a4;
+  --ink-10: #aab4c2;
+  --ink-11: #cdd4de;
+  --ink-12: #e8ecf2;
+  --white: #ffffff;
+
+  --blue-400: #4c8dff;
+  --blue-500: #2f6bff;
+  --blue-600: #1f52d8;
+  --green-400: #35d07f;
+  --green-500: #1faa63;
+  --green-600: #178a50;
+  --red-400: #ff6b6b;
+  --red-500: #e8484c;
+  --red-600: #c9333a;
+  --amber-400: #ffbb44;
+  --amber-500: #e39a1e;
+  --violet-400: #b38bff;
+
+  /* type scale (px) */
+  --fs-10: 10px;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-16: 16px;
+  --fs-22: 22px;
+  --fs-30: 30px;
+
+  /* space — 4px grid (2px sub-grid permitted) */
+  --sp-2: 2px;
+  --sp-4: 4px;
+  --sp-6: 6px;
+  --sp-8: 8px;
+  --sp-12: 12px;
+  --sp-16: 16px;
+  --sp-24: 24px;
+  --sp-32: 32px;
+
+  /* radii */
+  --r-2: 2px;
+  --r-4: 4px;
+  --r-6: 6px;
+
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', monospace;
+}
+
+/* ── Tier 2 · semantic — dark (default) ──────────────────────────────────── */
+:root,
+:root[data-theme='dark'] {
+  --surface-void: var(--ink-0);
+  --surface-base: var(--ink-1);
+  --surface-raised: var(--ink-2);
+  --surface-overlay: var(--ink-3);
+  --surface-row-alt: var(--ink-2);
+  --surface-row-hover: var(--ink-3);
+  --surface-row-selected: #16233d;
+
+  --border-subtle: var(--ink-3);
+  --border-default: var(--ink-4);
+  --border-strong: var(--ink-6);
+
+  --text-primary: #e8ecf2; /* 13.8:1 on base */
+  --text-secondary: #aab4c2; /* 8.0:1 */
+  --text-muted: #8b95a4; /* 4.9:1 — lifted from the 3.55:1 that failed */
+  --text-inverse: var(--ink-0);
+
+  --accent: var(--blue-400);
+  --accent-strong: var(--blue-500);
+
+  --status-positive: var(--green-400);
+  --status-negative: #ff8a8a; /* lifted so red text clears 4.5:1 on alt rows */
+  --status-warning: var(--amber-400);
+  --status-neutral: var(--ink-9);
+
+  --data-stale: var(--amber-400);
+  --data-pending: var(--violet-400);
+
+  --focus-ring: var(--blue-400);
+  --scrim: rgba(5, 7, 10, 0.66);
+
+  --bar-positive: var(--green-500);
+  --bar-negative: var(--red-500);
+  color-scheme: dark;
+}
+
+/* ── Tier 2 · semantic — light ───────────────────────────────────────────── */
+:root[data-theme='light'] {
+  --surface-void: #e7eaef;
+  --surface-base: #ffffff;
+  --surface-raised: #f5f7fa;
+  --surface-overlay: #ffffff;
+  --surface-row-alt: #f5f7fa;
+  --surface-row-hover: #eef1f6;
+  --surface-row-selected: #dbe7ff;
+
+  --border-subtle: #e2e6ec;
+  --border-default: #ccd3dc;
+  --border-strong: #a9b3c0;
+
+  --text-primary: #0f1724; /* 16.6:1 on white */
+  --text-secondary: #3f4a58; /* 8.6:1 */
+  --text-muted: #5b6675; /* 5.3:1 */
+  --text-inverse: #ffffff;
+
+  --accent: var(--blue-600);
+  --accent-strong: var(--blue-600);
+
+  --status-positive: #0a7a42; /* clears 4.5:1 on white and on tinted fills */
+  --status-negative: #b3242b;
+  --status-warning: #8a5300;
+  --status-neutral: #5b6675;
+
+  --data-stale: #a5670a;
+  --data-pending: #6d3fd8;
+
+  --focus-ring: var(--blue-600);
+  --scrim: rgba(15, 23, 36, 0.35);
+
+  --bar-positive: var(--green-500);
+  --bar-negative: var(--red-500);
+  color-scheme: light;
+}
+
+/* ── Tier 2 · semantic — high contrast ───────────────────────────────────── */
+:root[data-theme='hc'] {
+  --surface-void: #000000;
+  --surface-base: #000000;
+  --surface-raised: #0a0a0a;
+  --surface-overlay: #0a0a0a;
+  --surface-row-alt: #0a0a0a;
+  --surface-row-hover: #1a1a1a;
+  --surface-row-selected: #002a5c;
+
+  --border-subtle: #5a5a5a;
+  --border-default: #7a7a7a;
+  --border-strong: #ffffff;
+
+  --text-primary: #ffffff; /* 21:1 */
+  --text-secondary: #f0f0f0; /* 19:1 */
+  --text-muted: #d0d0d0; /* 13:1 */
+  --text-inverse: #000000;
+
+  --accent: #6fb0ff;
+  --accent-strong: #6fb0ff;
+
+  --status-positive: #4ade80;
+  --status-negative: #ff8080;
+  --status-warning: #ffd24a;
+  --status-neutral: #d0d0d0;
+
+  --data-stale: #ffd24a;
+  --data-pending: #cbb0ff;
+
+  --focus-ring: #ffd24a;
+  --scrim: rgba(0, 0, 0, 0.8);
+
+  --bar-positive: #4ade80;
+  --bar-negative: #ff8080;
+  color-scheme: dark;
+}
+
+/* ── Tier 3 · component — keyed by density ───────────────────────────────── */
+:root,
+:root[data-density='comfortable'] {
+  --row-height: 30px;
+  --header-height: 30px;
+  --toolbar-height: 40px;
+  --topbar-height: 52px;
+  --statusbar-height: 28px;
+  --cell-pad-x: 10px;
+  --grid-font-size: var(--fs-13);
+  --control-height: 30px;
+}
+
+:root[data-density='compact'] {
+  --row-height: 22px;
+  --header-height: 24px;
+  --toolbar-height: 34px;
+  --topbar-height: 46px;
+  --statusbar-height: 24px;
+  --cell-pad-x: 8px;
+  --grid-font-size: var(--fs-12);
+  --control-height: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-flash: 1ms;
+    --motion-control: 1ms;
+  }
+}
+:root {
+  --motion-flash: 240ms;
+  --motion-control: 90ms;
+}

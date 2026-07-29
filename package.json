@@ -1,0 +1,47 @@
+{
+  "name": "tape",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A real-time front-office blotter over a synthetic market feed that measures its own tick-to-screen latency at up to 50,000 messages/sec.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5180",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "conformance": "node bench/conformance.mjs",
+    "bench": "playwright test bench/scenarios --config bench/playwright.bench.ts",
+    "audit": "playwright test bench/audit --config bench/playwright.bench.ts",
+    "verify": "playwright test bench/verify --config bench/playwright.bench.ts",
+    "e2e": "playwright test e2e --config playwright.config.ts"
+  },
+  "dependencies": {
+    "ag-grid-community": "36.0.2",
+    "ag-grid-react": "36.0.2",
+    "@tanstack/react-virtual": "3.14.9",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "uplot": "1.6.32"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.1",
+    "@playwright/test": "1.50.1",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.2.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.1",
+    "@vitejs/plugin-react": "6.0.4",
+    "axe-core": "4.10.1",
+    "eslint": "9.18.0",
+    "jsdom": "26.0.0",
+    "typescript": "5.7.3",
+    "typescript-eslint": "8.21.0",
+    "vite": "8.1.5",
+    "vitest": "3.0.5"
+  }
+}
