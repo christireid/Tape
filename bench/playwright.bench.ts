@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Benchmark / audit / verify config. Runs against a production build (preview)
 // for representative numbers. A single CPU-limited container is slower than a
@@ -29,6 +33,10 @@ export default defineConfig({
   webServer: {
     command: 'npm run build && npx vite preview --port 5180 --strictPort --host 127.0.0.1',
     url: 'http://127.0.0.1:5180',
+    // Playwright resolves the command's cwd to this config file's directory
+    // (bench/), which would make vite preview serve a nonexistent bench/dist
+    // and 404 the readiness poll forever. Anchor it to the repo root.
+    cwd: ROOT,
     reuseExistingServer: true,
     timeout: 180_000,
   },

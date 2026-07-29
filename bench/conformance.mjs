@@ -41,8 +41,19 @@ function staticColourCheck() {
 
 // ── DOM checks ───────────────────────────────────────────────────────────────
 async function domChecks(page) {
+  const pageProblems = [];
+  page.on('pageerror', (e) => pageProblems.push(`pageerror: ${e.message}`));
+  page.on('console', (m) => {
+    if (m.type() === 'error') pageProblems.push(`console.error: ${m.text()}`);
+  });
   await page.goto(URL);
-  await page.getByText('Synthetic data').waitFor();
+  try {
+    await page.getByText('Synthetic data').waitFor();
+  } catch (e) {
+    console.error('app did not boot; page problems were:');
+    for (const p of pageProblems) console.error(' ', p);
+    throw e;
+  }
   await page.waitForTimeout(2500);
 
   // tabular figures on numeric leaves

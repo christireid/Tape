@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+
+const ROOT = dirname(fileURLToPath(import.meta.url));
 
 // End-to-end config. Uses the dev server for fast iteration.
 export default defineConfig({
@@ -19,6 +23,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run build && npx vite preview --port 5180 --strictPort --host 127.0.0.1',
     url: 'http://127.0.0.1:5180',
+    cwd: ROOT,
     reuseExistingServer: true,
     timeout: 180_000,
   },
