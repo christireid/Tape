@@ -93,11 +93,14 @@ export function formatMoney(v: number, decimals: 0 | 2 = 0): string {
   return (neg ? MINUS : '') + '$' + fmt.format(Math.abs(v));
 }
 
-/** Signed money (leading + or −) for P&L columns. */
+/** Signed money (leading + or −) for P&L columns. The sign is decided after
+ * rounding, so a sub-unit value never renders as "−$0". */
 export function formatSignedMoney(v: number, decimals: 0 | 2 = 0): string {
-  const glyph = v > 0 ? '+' : v < 0 ? MINUS : '·';
   const fmt = decimals === 2 ? moneyFmt2 : moneyFmt;
-  return `${glyph}$${fmt.format(Math.abs(v))}`;
+  const magnitude = fmt.format(Math.abs(v));
+  const isZero = Number(magnitude.replace(/,/g, '')) === 0;
+  const glyph = isZero ? '·' : v > 0 ? '+' : MINUS;
+  return `${glyph}$${magnitude}`;
 }
 
 const compactFmt = new Intl.NumberFormat('en-US', {
@@ -122,6 +125,14 @@ export function formatInt(v: number): string {
 export function formatQty(v: number): string {
   const neg = v < 0;
   return (neg ? MINUS : '') + intFmt.format(Math.abs(v));
+}
+
+/** Colour class for a signed money value, consistent with formatSignedMoney:
+ * the sign — and therefore the colour — is decided after rounding, so a value
+ * that displays as zero is never tinted. */
+export function signClassMoney(v: number): string {
+  if (Math.abs(v) < 0.5) return '';
+  return v > 0 ? 'pos' : 'neg';
 }
 
 /** Data-age for the status bar. */

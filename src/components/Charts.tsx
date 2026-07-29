@@ -50,7 +50,12 @@ export function PriceChart({ index }: { index: number }): React.JSX.Element {
         ],
         series: [
           {},
-          { stroke: cssVar('--accent'), width: 1.5, points: { show: false } },
+          {
+            stroke: cssVar('--accent'),
+            width: 2,
+            fill: `${cssVar('--accent')}24`, // ~14% alpha area under the line
+            points: { show: false },
+          },
         ],
       };
       plotRef.current = new uPlot(opts, [xs.current, ys.current], host);

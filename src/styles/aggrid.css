@@ -37,7 +37,11 @@
 .grid-host .ag-root-wrapper-body,
 .grid-host .ag-body,
 .grid-host .ag-center-cols-viewport,
-.grid-host .ag-body-viewport {
+.grid-host .ag-body-viewport,
+.grid-host .ag-body-vertical-scroll,
+.grid-host .ag-body-vertical-scroll-viewport,
+.grid-host .ag-body-horizontal-scroll,
+.grid-host .ag-body-horizontal-scroll-viewport {
   background-color: var(--surface-base) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-subtle) !important;

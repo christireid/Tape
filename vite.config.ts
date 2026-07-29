@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react';
 // SPA. Not Next.js — there is no SEO surface or server-render benefit for an
 // authenticated real-time tool. See ADR 000 / spec §2.
 export default defineConfig({
+  // Relative base so the built app serves from any static host or subpath
+  // (GitHub Pages project sites included) with no configuration.
+  base: './',
   plugins: [react()],
   server: { port: 5180 },
   preview: { port: 5180 },

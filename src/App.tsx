@@ -174,13 +174,13 @@ export function App(): React.JSX.Element {
           </section>
 
           <div style={{ display: 'flex', gap: 1, flex: '0 0 232px', minHeight: 0 }}>
-            <div className="col" style={{ flex: '1 1 0' }}>
+            <div className="col col-fill" style={{ flex: "1 1 0" }}>
               <PositionsPanel />
             </div>
-            <div className="col" style={{ flex: '1 1 0' }}>
+            <div className="col col-fill" style={{ flex: "1 1 0" }}>
               <OrdersPanel />
             </div>
-            <div className="col" style={{ flex: '1 1 0' }}>
+            <div className="col col-fill" style={{ flex: "1 1 0" }}>
               <section className="panel" aria-label="Price tape">
                 <div className="panel-head">
                   <span className="panel-title">Price tape</span>

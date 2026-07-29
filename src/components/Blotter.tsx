@@ -159,7 +159,7 @@ export function Blotter({ onSelect, filter, rowHeight }: Props): React.JSX.Eleme
         asyncTransactionWaitMillis={ABLATE_WAIT0 ? 0 : 32}
         animateRows={false}
         suppressScrollOnNewData
-        rowSelection={{ mode: 'singleRow', enableClickSelection: true }}
+        rowSelection={{ mode: 'singleRow', enableClickSelection: true, checkboxes: false }}
         onGridReady={onGridReady}
         onAsyncTransactionsFlushed={() => {
           requestAnimationFrame(() => store.recordPaint());

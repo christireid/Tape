@@ -75,7 +75,7 @@ real feed data on screen — **533 / 688 / 746 ms**. Target was under 2 s; measu
 
 | §11 item | Status |
 |---|---|
-| Live deployment, first paint < 2 s cold | PARTIAL — first paint **measured at 292 ms median FCP, 688 ms to live data** (see above); public deployment not yet stood up (the local simulator needs only a static host) |
+| Live deployment, first paint < 2 s cold | PARTIAL — first paint **measured at 292 ms median FCP, 688 ms to live data**; a GitHub Pages deploy workflow is committed (fires on merge to `main` — enabling Pages on the repo is the one manual step left) |
 | Synthetic-data label + README disclosure | DONE |
 | Performance page with committed history | DONE — `/performance.html`, built from the committed `bench/results/` history |
 | Accessibility report published | DONE |

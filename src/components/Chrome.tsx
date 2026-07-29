@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { store } from '../store/marketStore.ts';
 import { useSlowTick } from '../store/hooks.ts';
-import { formatAge, formatInt, formatSignedMoney } from '../domain/format.ts';
+import { formatAge, formatInt, formatSignedMoney, signClassMoney } from '../domain/format.ts';
 import type {
   ConflationWindow,
   EngineKind,
@@ -38,19 +38,19 @@ export function TopBar({
       <div className="topbar-metrics">
         <div className="metric">
           <span className="metric-label">Realised</span>
-          <span className={`metric-value ${totals.realized >= 0 ? 'pos' : 'neg'}`}>
+          <span className={`metric-value ${signClassMoney(totals.realized)}`}>
             {formatSignedMoney(totals.realized)}
           </span>
         </div>
         <div className="metric">
           <span className="metric-label">Unrealised</span>
-          <span className={`metric-value ${totals.unrealized >= 0 ? 'pos' : 'neg'}`}>
+          <span className={`metric-value ${signClassMoney(totals.unrealized)}`}>
             {formatSignedMoney(totals.unrealized)}
           </span>
         </div>
         <div className="metric">
           <span className="metric-label">Net P&amp;L</span>
-          <span className={`metric-value dominant ${totals.net >= 0 ? 'pos' : 'neg'}`}>
+          <span className={`metric-value dominant ${signClassMoney(totals.net)}`}>
             {formatSignedMoney(totals.net)}
           </span>
         </div>

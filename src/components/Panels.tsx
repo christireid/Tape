@@ -5,6 +5,7 @@ import {
   formatPrice,
   formatQty,
   formatSignedMoney,
+  signClassMoney,
 } from '../domain/format.ts';
 import type { Order } from '../domain/types.ts';
 
@@ -46,7 +47,7 @@ export function PositionsPanel(): React.JSX.Element {
                   <td className={p.netQty >= 0 ? 'pos' : 'neg'}>{formatQty(p.netQty)}</td>
                   <td>{formatPrice(p.avgCost, tick, fmt)}</td>
                   <td>{formatMoney(p.marketValue)}</td>
-                  <td className={p.unrealizedPnl >= 0 ? 'pos' : 'neg'}>
+                  <td className={signClassMoney(p.unrealizedPnl)}>
                     {formatSignedMoney(p.unrealizedPnl)}
                   </td>
                 </tr>

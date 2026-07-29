@@ -29,16 +29,16 @@ export interface ColSpec {
 }
 
 export const COLUMNS: ColSpec[] = [
-  { id: 'symbol', label: 'Symbol', width: 96, numeric: false, pinned: true, text: (r) => r.symbol },
-  { id: 'name', label: 'Description', width: 190, numeric: false, pinned: true, text: (r) => r.name },
-  { id: 'bid', label: 'Bid', width: 92, numeric: true, text: (r) => formatPrice(r.bid, r.tickSize, r.priceFormat) },
-  { id: 'bidSize', label: 'BSz', width: 64, numeric: true, text: (r) => formatSize(r.bidSize) },
-  { id: 'ask', label: 'Ask', width: 92, numeric: true, text: (r) => formatPrice(r.ask, r.tickSize, r.priceFormat) },
-  { id: 'askSize', label: 'ASz', width: 64, numeric: true, text: (r) => formatSize(r.askSize) },
+  { id: 'symbol', label: 'Symbol', width: 92, numeric: false, pinned: true, text: (r) => r.symbol },
+  { id: 'name', label: 'Description', width: 196, numeric: false, pinned: true, text: (r) => r.name },
+  { id: 'bid', label: 'Bid', width: 104, numeric: true, text: (r) => formatPrice(r.bid, r.tickSize, r.priceFormat) },
+  { id: 'bidSize', label: 'BSz', width: 72, numeric: true, text: (r) => formatSize(r.bidSize) },
+  { id: 'ask', label: 'Ask', width: 104, numeric: true, text: (r) => formatPrice(r.ask, r.tickSize, r.priceFormat) },
+  { id: 'askSize', label: 'ASz', width: 72, numeric: true, text: (r) => formatSize(r.askSize) },
   {
     id: 'last',
     label: 'Last',
-    width: 92,
+    width: 104,
     numeric: true,
     text: (r) => formatPrice(r.last, r.tickSize, r.priceFormat),
     sign: (r) => signOf(r.change),
@@ -46,7 +46,7 @@ export const COLUMNS: ColSpec[] = [
   {
     id: 'change',
     label: 'Chg',
-    width: 76,
+    width: 104,
     numeric: true,
     text: (r) => formatChange(r.change, r.tickSize, r.priceFormat),
     sign: (r) => signOf(r.change),
@@ -54,17 +54,17 @@ export const COLUMNS: ColSpec[] = [
   {
     id: 'changePct',
     label: 'Chg %',
-    width: 72,
+    width: 84,
     numeric: true,
     text: (r) => formatPercent(r.changePct),
     sign: (r) => signOf(r.changePct),
   },
-  { id: 'changebar', label: 'Δ', width: 90, numeric: true, text: () => '' },
-  { id: 'spread', label: 'Spread', width: 76, numeric: true, text: (r) => formatPrice(r.spread, r.tickSize, r.priceFormat) },
-  { id: 'high', label: 'High', width: 92, numeric: true, text: (r) => formatPrice(r.high, r.tickSize, r.priceFormat) },
-  { id: 'low', label: 'Low', width: 92, numeric: true, text: (r) => formatPrice(r.low, r.tickSize, r.priceFormat) },
-  { id: 'volume', label: 'Volume', width: 96, numeric: true, text: (r) => formatInt(r.volume) },
-  { id: 'sector', label: 'Sector', width: 120, numeric: false, text: (r) => r.sector },
+  { id: 'changebar', label: 'Δ', width: 84, numeric: true, text: () => '' },
+  { id: 'spread', label: 'Spread', width: 96, numeric: true, text: (r) => formatPrice(r.spread, r.tickSize, r.priceFormat) },
+  { id: 'high', label: 'High', width: 104, numeric: true, text: (r) => formatPrice(r.high, r.tickSize, r.priceFormat) },
+  { id: 'low', label: 'Low', width: 104, numeric: true, text: (r) => formatPrice(r.low, r.tickSize, r.priceFormat) },
+  { id: 'volume', label: 'Volume', width: 92, numeric: true, text: (r) => formatInt(r.volume) },
+  { id: 'sector', label: 'Sector', width: 118, numeric: false, text: (r) => r.sector },
 ];
 
 /** Percent change clamped to ±4% so ordinary moves stay readable (§5.3). */

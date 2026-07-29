@@ -47,6 +47,9 @@ describe('signed formatters', () => {
     expect(formatPercent(0)).toBe('·0.00%');
     expect(formatMoney(-262)).toBe('−$262');
     expect(formatSignedMoney(23561)).toBe('+$23,561');
+    // sign decided after rounding — a sub-unit value never renders as −$0
+    expect(formatSignedMoney(-0.3)).toBe('·$0');
+    expect(formatSignedMoney(-0.3, 2)).toBe('−$0.30');
     expect(formatChange(0.00053, 0.00001, 'decimal')).toBe('+0.00053');
   });
 });

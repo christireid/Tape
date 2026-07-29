@@ -6,7 +6,10 @@ All market data is synthetic, generated locally by a seeded price model. No real
 
 [![CI](https://github.com/christireid/Tape/actions/workflows/ci.yml/badge.svg)](https://github.com/christireid/Tape/actions/workflows/ci.yml)
 
-**Live demo:** _[deploy target — the local simulator has no backend, so any static host works]_ · **License:** MIT · CI gates: build · typecheck · lint · unit · conformance · a11y · e2e (bench nightly)
+**Live demo:** deploys to GitHub Pages on merge to `main` via
+[`deploy-pages.yml`](.github/workflows/pages.yml) — the build is fully static (relative base, no
+backend), so it serves from any static host. · **License:** MIT · CI gates: build · typecheck ·
+lint · unit · conformance · a11y · e2e (bench nightly)
 
 ![Tape](docs/screenshot.png)
 
