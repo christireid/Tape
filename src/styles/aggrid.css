@@ -84,6 +84,14 @@
 .grid-host .ag-cell-data-changed {
   background-color: var(--flash-tint) !important;
 }
+/* The fade-out phase must be tokenized too: the legacy stylesheet fades from
+   its own default highlight (a mid-gray that fails AA under hc's white text
+   mid-fade) over 1000ms. Fading our tint to transparent over the motion token
+   keeps every intermediate frame on-theme and honours reduced motion. */
+.grid-host .ag-cell-data-changed-animation {
+  background-color: transparent !important;
+  transition: background-color var(--motion-flash) ease-out !important;
+}
 
 .grid-host .ag-cell.num,
 .grid-host .ag-cell-value.num {
