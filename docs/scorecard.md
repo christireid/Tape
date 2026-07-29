@@ -79,7 +79,7 @@ real feed data on screen — **533 / 688 / 746 ms**. Target was under 2 s; measu
 | Synthetic-data label + README disclosure | DONE |
 | Performance page with committed history | DONE — `/performance.html`, built from the committed `bench/results/` history |
 | Accessibility report published | DONE |
-| Six ADRs minimum | DONE (001–006, with the ADR 004 ablations measured and committed) |
+| Six ADRs minimum | DONE — seven (001–007), covering every topic §11 names including binary-over-JSON encoding; the ADR 004 ablations are measured and committed |
 | 90-second recording + case study | DONE — case study written; walkthrough recorded to `docs/walkthrough.webm` via the committed `bench/record-walkthrough.mjs` |
 | CHANGELOG, LICENSE, CONTRIBUTING, CI badges | DONE (badges wired; live badge URLs attach on first CI run) |
 

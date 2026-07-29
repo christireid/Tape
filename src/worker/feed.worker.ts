@@ -20,6 +20,7 @@ import {
   type Quote,
 } from '../sim/model.ts';
 import { applyFill as applyFillBook, unrealised, type Book } from '../domain/pnl.ts';
+import { decodeTicks } from './codec.ts';
 
 const ctx: DedicatedWorkerGlobalScope =
   self as unknown as DedicatedWorkerGlobalScope;
@@ -59,9 +60,101 @@ const changed = new Set<number>();
 const positions = new Map<number, Pos>();
 const orders = new Map<string, Order>();
 
+// ── WebSocketTransport ───────────────────────────────────────────────────────
+// The second transport (§5.2). It shares everything that matters with the
+// simulator: the same codec (codec.ts, also imported by the feed server), the
+// same per-instrument sequence check, the same conflation set and flush. Only
+// tick *production* differs — the server produces, this decodes.
+// Both ends build the universe deterministically from (seed, universe, nowMs),
+// so the wire carries numeric indices only.
+
+const WS_URL = 'ws://127.0.0.1:8181';
+let ws: WebSocket | null = null;
+let wsMsgsAccum = 0;
+let wsRetryTimer: ReturnType<typeof setTimeout> | null = null;
+
+function applyWireTicks(buf: ArrayBuffer): void {
+  const ticks = decodeTicks(buf);
+  if (!ticks) return; // foreign/corrupt frame — drop, never crash the worker
+  for (const t of ticks) {
+    const q = quotes[t.index];
+    if (!q) continue;
+    q.mid = t.mid;
+    q.bid = t.bid;
+    q.ask = t.ask;
+    q.bidSize = t.bidSize;
+    q.askSize = t.askSize;
+    q.last = t.last;
+    q.high = t.high;
+    q.low = t.low;
+    q.volume = t.volume;
+    q.seq = t.seq;
+    checkSequence(t.index, t.seq); // same discipline as the simulator path
+    changed.add(t.index);
+    wsMsgsAccum += 1;
+  }
+}
+
+function wsStart(): void {
+  if (!config || ws) return;
+  const socket = new WebSocket(WS_URL);
+  socket.binaryType = 'arraybuffer';
+  ws = socket;
+  socket.onopen = () => {
+    connected = true;
+    // Handshake: the server derives the identical universe from this config.
+    socket.send(
+      JSON.stringify({
+        type: 'hello',
+        seed: config?.seed,
+        universe: config?.universe,
+        nowMs: config?.nowMs,
+        rate: config?.rate,
+      }),
+    );
+    // Resync sequence expectations — a reconnect must not count as gaps.
+    for (let i = 0; i < lastSeq.length; i++) lastSeq[i] = -1;
+  };
+  socket.onmessage = (ev: MessageEvent) => {
+    if (ev.data instanceof ArrayBuffer) applyWireTicks(ev.data);
+  };
+  socket.onclose = () => {
+    if (ws === socket) {
+      ws = null;
+      connected = false;
+      if (config?.transport === 'websocket' && wsRetryTimer === null) {
+        wsRetryTimer = setTimeout(() => {
+          wsRetryTimer = null;
+          wsStart();
+        }, 2000);
+      }
+    }
+  };
+  socket.onerror = () => socket.close();
+}
+
+function wsStop(): void {
+  if (wsRetryTimer !== null) {
+    clearTimeout(wsRetryTimer);
+    wsRetryTimer = null;
+  }
+  if (ws) {
+    const s = ws;
+    ws = null;
+    s.close();
+  }
+}
+
+function wsSendControl(patch: Record<string, unknown>): void {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'config', ...patch }));
+  }
+}
+
 // ── Lifecycle ────────────────────────────────────────────────────────────────
 
 function bootstrap(cfg: FeedConfig): void {
+  wsStop();
   config = cfg;
   generation += 1;
   rng = mulberry32(cfg.seed);
@@ -72,11 +165,13 @@ function bootstrap(cfg: FeedConfig): void {
   positions.clear();
   orders.clear();
   gapsRecovered = 0;
-  connected = true;
+  connected = cfg.transport !== 'websocket'; // ws connects asynchronously
   disconnectUntil = 0;
   burstUntil = 0;
   dataTs = epochNow();
   lastFlushEpoch = epochNow();
+  wsMsgsAccum = 0;
+  if (cfg.transport === 'websocket') wsStart();
   ctx.postMessage({ type: 'ready', generation, instruments });
 }
 
@@ -102,6 +197,12 @@ function checkSequence(index: number, seq: number): void {
 
 function produce(nowE: number, measuredDt: number): number {
   if (!config) return 0;
+  // WebSocket mode: the server produces; drain what the socket delivered.
+  if (config.transport === 'websocket') {
+    const n = wsMsgsAccum;
+    wsMsgsAccum = 0;
+    return n;
+  }
   if (!connected) return 0;
 
   const rate = nowE < burstUntil ? config.rate * 5 : config.rate;
@@ -275,9 +376,14 @@ function flush(): void {
   const nowE = epochNow();
   const measuredDt = nowE - lastFlushEpoch;
 
-  if (nowE >= disconnectUntil && !connected) {
-    connected = true; // reconnected → resync baselines to avoid false gaps
-    for (let i = 0; i < lastSeq.length; i++) lastSeq[i] = quotes[i]!.seq;
+  if (nowE >= disconnectUntil && !connected && disconnectUntil > 0) {
+    disconnectUntil = 0;
+    if (config?.transport === 'websocket') {
+      wsStart(); // reconnect; sequence baselines resync in onopen
+    } else {
+      connected = true; // reconnected → resync baselines to avoid false gaps
+      for (let i = 0; i < lastSeq.length; i++) lastSeq[i] = quotes[i]!.seq;
+    }
   }
 
   const msgsIn = produce(nowE, measuredDt);
@@ -372,7 +478,21 @@ ctx.onmessage = (ev: MessageEvent<WorkerInbound>): void => {
       scheduleNext();
       break;
     case 'config':
-      if (config) config = { ...config, ...msg.patch };
+      if (config) {
+        const prevTransport = config.transport;
+        config = { ...config, ...msg.patch };
+        if (msg.patch.rate !== undefined) wsSendControl({ rate: msg.patch.rate });
+        if (msg.patch.transport && msg.patch.transport !== prevTransport) {
+          if (msg.patch.transport === 'websocket') {
+            connected = false;
+            wsStart();
+          } else {
+            wsStop();
+            connected = true;
+            for (let i = 0; i < lastSeq.length; i++) lastSeq[i] = quotes[i]!.seq;
+          }
+        }
+      }
       break;
     case 'universe':
       if (config) {
@@ -386,6 +506,7 @@ ctx.onmessage = (ev: MessageEvent<WorkerInbound>): void => {
       else if (msg.fault === 'disconnect') {
         connected = false;
         disconnectUntil = epochNow() + 4000;
+        if (config?.transport === 'websocket') wsStop(); // drop the socket too
       } else if (msg.fault === 'burst') {
         burstUntil = epochNow() + 3000;
       }

@@ -113,6 +113,7 @@ npm run verify         # axe across 6 theme×density combinations + 60s soak (he
 npm run audit          # interaction pass, accessibility, keyboard, performance
 npm run e2e            # end-to-end behaviour
 npm run bench          # full benchmark matrix → bench/results/
+npm run feed-server    # WebSocket feed server (ws://127.0.0.1:8181) for the second transport
 ```
 
 The **performance-trend page** at `/performance.html` charts every committed bench run (built from
@@ -172,11 +173,15 @@ directly instead — [ADR 002](docs/adr/002-server-driven-row-model-without-ente
 4. [Build or buy the grid](docs/adr/004-build-or-buy-the-grid.md)
 5. [Canvas charting, not SVG](docs/adr/005-canvas-charting.md)
 6. [Conflation strategy](docs/adr/006-conflation-strategy.md)
+7. [Binary over JSON encoding](docs/adr/007-binary-over-json.md)
 
 ## Not yet built
 
-Viewport-aware feed subscription (the fix ADR 004 identifies), the deployed WebSocket transport,
-and the public deployment itself (a hosting decision — the demo needs only a static host; cold
-first paint is already measured at **292 ms median FCP, 688 ms to live data** via
-`bench/first-paint.mjs`). The local simulator is the default and is a design decision, not a
-placeholder: the demo has no backend to fail, no cold start and no cost.
+Viewport-aware feed subscription (the fix ADR 004 identifies), and the public deployment itself
+(a hosting decision — the demo needs only a static host; cold first paint is already measured at
+**292 ms median FCP, 688 ms to live data** via `bench/first-paint.mjs`). The WebSocket transport
+itself **is** built — `npm run feed-server` starts the Node feed server, and the worker's
+transport shares the binary codec, sequencing and recovery with the simulator
+([ADR 007](docs/adr/007-binary-over-json.md)); only its public hosting (a persistent VM, not a
+function platform) remains a deployment decision. The local simulator is the default and is a
+design decision, not a placeholder: the demo has no backend to fail, no cold start and no cost.
