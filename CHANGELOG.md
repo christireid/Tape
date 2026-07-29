@@ -34,8 +34,20 @@ Built from spec v1.1. First public milestone (spec §9, milestone 5+ complete).
   a 60 s soak, unit/component/e2e tests, and a CI workflow that gates on all of them.
 - Six ADRs and a performance methodology, accessibility report and case study.
 
+### Added later the same day
+
+- **ADR 004 ablations measured**: `asyncTransactionWaitMillis: 0` recovers ~4 ms p50 / ~10 ms p99
+  (the queue's contribution); cell flash is near-neutral. Raw JSON committed.
+- **Performance-trend page** at `/performance.html`, built statically from the committed
+  `bench/results/` history.
+- **First paint measured** (`bench/first-paint.mjs`): 292 ms median FCP, 688 ms to live blotter
+  data, cold cache, against the 2 s target.
+- **Soak heap slope**: the 60 s soak now reports min/max and a least-squares slope over per-second
+  samples, and gates on both.
+- **Walkthrough recording** (`docs/walkthrough.webm`), reproducible via
+  `bench/record-walkthrough.mjs`.
+
 ### Known open items
 
 Tracked honestly in the README "Not yet built" list and the scorecard's definition-of-done table:
-viewport-aware feed subscription, deployed WebSocket transport, performance-trend page, first-paint
-measurement, and a recorded walkthrough.
+viewport-aware feed subscription, deployed WebSocket transport, and the public deployment itself.

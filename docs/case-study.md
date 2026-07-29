@@ -62,6 +62,8 @@ transport, a performance-trend page, a first-paint measurement, and a recorded w
 
 ## Screen recording
 
-_[90-second walkthrough — to record: connect → 50k load → engine switch → fault injection →
-order through the gates → theme/density → screen-reader announcement. Placeholder until captured;
-named here rather than implied to exist.]_
+The ~90-second walkthrough is committed at [`docs/walkthrough.webm`](walkthrough.webm) and is
+reproducible — `node bench/record-walkthrough.mjs` re-records it against a running build. The
+sequence: load → live blotter → engine switch → 5,000 × 50k load → gap and disconnect injection
+with visible recovery → an order through the fat-finger gate → theme and density switching → the
+command palette flattening the book.

@@ -15,6 +15,13 @@ import { COLUMNS, changeBarWidthPct } from './columns.ts';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
+// Ablation flags for the fairness record in ADR 004 (`?ablate=wait0` /
+// `?ablate=noflash`). Bench-only: they isolate the async queue's and the cell
+// flash's contribution to the published latency figures.
+const ABLATE = new URLSearchParams(window.location.search).get('ablate') ?? '';
+const ABLATE_WAIT0 = ABLATE.includes('wait0');
+const ABLATE_NOFLASH = ABLATE.includes('noflash');
+
 /**
  * Change-bar cell renderer — a plain class that writes to two DOM nodes
  * directly. No React reconciliation on the hot path (§5.3). The largest visual
@@ -73,7 +80,9 @@ function buildColDefs(): ColDef<BlotterRow>[] {
       cellClass: c.numeric ? 'ag-right-aligned-cell num' : c.id === 'symbol' ? 'sym-cell' : undefined,
     };
     if (c.pinned) def.pinned = 'left';
-    if (c.id === 'bid' || c.id === 'ask' || c.id === 'last') def.enableCellChangeFlash = true;
+    if (!ABLATE_NOFLASH && (c.id === 'bid' || c.id === 'ask' || c.id === 'last')) {
+      def.enableCellChangeFlash = true;
+    }
     if (c.id === 'change' || c.id === 'changePct' || c.id === 'last') {
       def.cellClassRules = {
         pos: (p) => (p.data ? (c.sign?.(p.data) === 'up') : false),
@@ -147,7 +156,7 @@ export function Blotter({ onSelect, filter, rowHeight }: Props): React.JSX.Eleme
         columnDefs={colDefs}
         getRowId={(p) => p.data.id}
         rowHeight={rowHeight}
-        asyncTransactionWaitMillis={32}
+        asyncTransactionWaitMillis={ABLATE_WAIT0 ? 0 : 32}
         animateRows={false}
         suppressScrollOnNewData
         rowSelection={{ mode: 'singleRow', enableClickSelection: true }}

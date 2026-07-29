@@ -67,7 +67,24 @@ test('60s soak — flat heap, zero console errors, no gaps', async ({ page }) =>
   if (heap.length >= 4) {
     const min = Math.min(...heap);
     const max = Math.max(...heap);
+    // Least-squares slope over the per-second samples (MB/min). A slope over N
+    // samples cannot be hidden by a GC that happens to reset at the last one.
+    const n = heap.length;
+    const meanX = (n - 1) / 2;
+    const meanY = heap.reduce((s, v) => s + v, 0) / n;
+    let num = 0;
+    let den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (i - meanX) * (heap[i]! - meanY);
+      den += (i - meanX) ** 2;
+    }
+    const slopePerMin = (num / den) * 60;
+    // eslint-disable-next-line no-console
+    console.log(
+      `soak heap: min=${min.toFixed(1)} MB max=${max.toFixed(1)} MB slope=${slopePerMin.toFixed(2)} MB/min over ${n} samples`,
+    );
     // Bounded growth: the working set should not balloon over the soak.
     expect(max - min, `heap min=${min.toFixed(1)} max=${max.toFixed(1)}`).toBeLessThan(min + 40);
+    expect(Math.abs(slopePerMin), `slope=${slopePerMin.toFixed(2)} MB/min`).toBeLessThan(20);
   }
 });

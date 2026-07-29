@@ -1,0 +1,36 @@
+{
+  "capturedAt": "2026-07-29T02:38:50.669Z",
+  "cell": "AG Grid 1200x25k",
+  "readings": [
+    {
+      "variant": "baseline (wait 32, flash on)",
+      "msgsInPerSec": 25283,
+      "rowsOutPerSec": 20892,
+      "fps": 59,
+      "t2sP50": 25.4,
+      "t2sP95": 41.1,
+      "t2sP99": 48.6,
+      "gaps": 0
+    },
+    {
+      "variant": "asyncTransactionWaitMillis: 0",
+      "msgsInPerSec": 25437,
+      "rowsOutPerSec": 21196,
+      "fps": 60,
+      "t2sP50": 21.6,
+      "t2sP95": 36.8,
+      "t2sP99": 38.9,
+      "gaps": 0
+    },
+    {
+      "variant": "cell flash disabled",
+      "msgsInPerSec": 25406,
+      "rowsOutPerSec": 20949,
+      "fps": 60,
+      "t2sP50": 24.6,
+      "t2sP95": 41.1,
+      "t2sP99": 42.8,
+      "gaps": 0
+    }
+  ]
+}

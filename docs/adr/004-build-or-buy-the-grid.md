@@ -41,13 +41,20 @@ AG Grid options in force for every measurement (see `src/components/Blotter.tsx`
 on bid/ask/last; row and column virtualisation on (default); `animateRows: false`;
 `suppressScrollOnNewData: true`; single-row selection.
 
-Ablations to isolate the queue's contribution (run `npm run bench` after setting the variant; these
-rows are populated when the ablation bench is run):
+Ablations isolating the queue's and the flash's contribution (measured 2026-07-29 via
+`npx playwright test --config bench/playwright.bench.ts ablation`; raw JSON committed in
+`bench/results/ablation-*.json`):
 
-| Variant | Universe | Rate | FPS | t2s p50 / p95 |
+| Variant | Universe | Rate | FPS | t2s p50 / p95 / p99 |
 |---|---|---|---|---|
-| `asyncTransactionWaitMillis: 0` | 1,200 | 25k | _[run ablation]_ | _[run ablation]_ |
-| Cell flash disabled | 1,200 | 25k | _[run ablation]_ | _[run ablation]_ |
+| Baseline (wait 32 ms, flash on) | 1,200 | 25k | 59 | 25.4 / 41.1 / 48.6 ms |
+| `asyncTransactionWaitMillis: 0` | 1,200 | 25k | 60 | 21.6 / 36.8 / 38.9 ms |
+| Cell flash disabled | 1,200 | 25k | 60 | 24.6 / 41.1 / 42.8 ms |
+
+Read: removing the async queue wait recovers ~4 ms of p50 and ~10 ms of p99 — that is the queue's
+contribution to the published figures, confirming the latencies are partly *configured* delay.
+Disabling cell flash is nearly neutral at this load on this host; its paint cost is absorbed while
+the frame budget holds. The queue, not the flash, is the tunable that matters.
 
 The published axe-core results are captured on the **AG Grid engine** (the default); the
 hand-built engine's accessibility surface is hand-written and re-run through `npm run audit`, but

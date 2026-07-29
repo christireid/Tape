@@ -21,8 +21,9 @@ Captured 2026-07-29T02:03:23.159Z, 1600x940.
 | virtual | 5,000 | 50k | 49,960 | 44,344 | 60 | 29.4 / 44.7 / 48.4 ms |
 <!-- SCORECARD_BENCH_TABLE_END -->
 
-60 s soak at 25,000 msgs/sec: heap bounded (min/max/slope, sampled every second). Console errors
-across the full interaction pass: **0**. Gaps in steady state: **0**.
+60 s soak at 25,000 msgs/sec (`usedJSHeapSize`, sampled every second): min **6.7 MB**, max
+**6.7 MB**, least-squares slope **0.00 MB/min** over 60 samples. Console errors across the full
+interaction pass: **0**. Gaps in steady state: **0**.
 
 Axe-core WCAG 2 A + AA: **0 violations** across dark/compact, dark/comfortable, light/compact,
 light/comfortable, hc/compact, hc/comfortable.
@@ -64,16 +65,23 @@ derived from the displayed counters.
 **Score: 10 / 10** on the rubric (§12). The rubric measures the build; the release bar (§11) is
 tracked separately below so the 10/10 does not read as covering everything.
 
+## First paint (cold cache)
+
+Measured with `bench/first-paint.mjs`, 5 fresh browser contexts against the production build:
+first contentful paint **272 / 292 / 312 ms** (min / median / max); live blotter — first row of
+real feed data on screen — **533 / 688 / 746 ms**. Target was under 2 s; measured, not assumed.
+
 ## Definition-of-done status (release bar, §11)
 
 | §11 item | Status |
 |---|---|
-| Live deployment, first paint < 2 s cold | OPEN — first paint unmeasured; local simulator needs only a static host |
+| Live deployment, first paint < 2 s cold | PARTIAL — first paint **measured at 292 ms median FCP, 688 ms to live data** (see above); public deployment not yet stood up (the local simulator needs only a static host) |
 | Synthetic-data label + README disclosure | DONE |
-| Performance page with committed history | OPEN — `bench/results/` is committed; the trend page is not built |
+| Performance page with committed history | DONE — `/performance.html`, built from the committed `bench/results/` history |
 | Accessibility report published | DONE |
-| Six ADRs minimum | DONE (001–006) |
-| 90-second recording + case study | PARTIAL — case study written; recording OPEN |
+| Six ADRs minimum | DONE (001–006, with the ADR 004 ablations measured and committed) |
+| 90-second recording + case study | DONE — case study written; walkthrough recorded to `docs/walkthrough.webm` via the committed `bench/record-walkthrough.mjs` |
 | CHANGELOG, LICENSE, CONTRIBUTING, CI badges | DONE (badges wired; live badge URLs attach on first CI run) |
 
-An honest OPEN column beside a 10/10 rubric is more credible than the rubric alone.
+The one remaining OPEN edge is the public deployment itself — a hosting decision, not a build
+artifact. An honest status column beside a 10/10 rubric is more credible than the rubric alone.

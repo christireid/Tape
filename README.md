@@ -41,9 +41,9 @@ claim the library is slow — it does far less — and
 [ADR 004](docs/adr/004-build-or-buy-the-grid.md) reads the comparison honestly, including what
 would close the gap for either engine and why a CPU-limited host widens it.
 
-60-second soak at 25,000 msgs/sec: heap sampled every second, min/max/slope reported
-(`usedJSHeapSize`, Chromium-only). Sequence gaps in steady state: 0. Console errors across a full
-interaction pass: 0.
+60-second soak at 25,000 msgs/sec: heap **6.7 MB → 6.7 MB, slope 0.00 MB/min** over 60 per-second
+samples (`usedJSHeapSize`, Chromium-only). Sequence gaps in steady state: 0. Console errors across
+a full interaction pass: 0. Cold-cache first paint: **292 ms median FCP, 688 ms to live data**.
 
 **Tick-to-screen is measured properly**, which is the only reason the comparison means anything —
 one absolute clock across the worker boundary, closed after the grid transaction queue flushes and
@@ -104,11 +104,16 @@ npm run build
 
 npm test               # unit + component (Vitest)
 npm run conformance    # design conformance checks
-npm run verify         # axe across 6 theme×density combinations + 60s soak
+npm run verify         # axe across 6 theme×density combinations + 60s soak (heap min/max/slope)
 npm run audit          # interaction pass, accessibility, keyboard, performance
 npm run e2e            # end-to-end behaviour
 npm run bench          # full benchmark matrix → bench/results/
 ```
+
+The **performance-trend page** at `/performance.html` charts every committed bench run (built from
+`bench/results/` at build time — static, no backend). `bench/first-paint.mjs` measures cold-cache
+first paint; `bench/record-walkthrough.mjs` reproduces the walkthrough recording; the ablation
+variants in [ADR 004](docs/adr/004-build-or-buy-the-grid.md) run via `?ablate=wait0` / `?ablate=noflash`.
 
 CI runs typecheck, lint, unit tests, build, conformance, verify, audit and e2e on every push, and
 the bench matrix nightly. It fails on any console error, axe violation, failed keyboard check, or
@@ -163,7 +168,8 @@ directly instead — [ADR 002](docs/adr/002-server-driven-row-model-without-ente
 
 ## Not yet built
 
-Viewport-aware feed subscription (the fix ADR 004 identifies), the WebSocket transport deployment,
-the performance-trend page, the case study screen recording, and a first-paint measurement
-[target: under 2 s cold — unmeasured]. The local simulator is the default and is a design
-decision, not a placeholder: the demo has no backend to fail, no cold start and no cost.
+Viewport-aware feed subscription (the fix ADR 004 identifies), the deployed WebSocket transport,
+and the public deployment itself (a hosting decision — the demo needs only a static host; cold
+first paint is already measured at **292 ms median FCP, 688 ms to live data** via
+`bench/first-paint.mjs`). The local simulator is the default and is a design decision, not a
+placeholder: the demo has no backend to fail, no cold start and no cost.

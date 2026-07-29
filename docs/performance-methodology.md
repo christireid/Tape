@@ -17,6 +17,10 @@ npm run bench          # full matrix, both engines → bench/results/<ISO-timest
 npm run verify         # axe across 6 theme×density combinations + 60s soak
 npm run audit          # interaction pass, a11y, keyboard, performance
 npm run conformance    # design conformance
+
+npx playwright test --config bench/playwright.bench.ts ablation   # ADR 004 fairness ablations
+node bench/first-paint.mjs                                        # cold-cache first paint
+node bench/record-walkthrough.mjs                                 # re-record docs/walkthrough.webm
 ```
 
 CI runs `verify`, `audit`, `conformance` and `e2e` on every push and `bench` nightly, committing
@@ -66,8 +70,15 @@ cannot. The soak asserts bounded growth.
 Counted via a `PerformanceObserver` on `longtask`. Where the entry type is unavailable the counter
 reports `n/a` rather than fabricating a zero.
 
-## What is not yet measured
+## First paint
 
-First paint on a cold cache (target: under 2 s — unmeasured), and the performance-trend page that
-would chart `bench/results/` history over time. Both are named in the README's "Not yet built"
-list rather than implied to exist.
+`bench/first-paint.mjs`: five fresh (cold-cache) browser contexts against the production build,
+reporting min/median/max of first contentful paint (via a buffered `PerformanceObserver` on
+`paint`) and of time-to-live-blotter — the stricter bar of the first row of real feed data on
+screen. Measured 2026-07-29: FCP 272/292/312 ms; live blotter 533/688/746 ms, against a 2 s
+target.
+
+## Trend page
+
+`/performance.html` charts every committed run in `bench/results/` — built statically from the
+repo's history at build time, so the page can never disagree with the committed JSON.
