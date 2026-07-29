@@ -5,7 +5,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [1.1.0] — 2026-07-29
 
-Built from spec v1.1. First public milestone (spec §9, milestone 5+ complete).
+First public milestone: the full application, measurement harness and quality gates.
 
 ### Added
 
@@ -49,14 +49,14 @@ Built from spec v1.1. First public milestone (spec §9, milestone 5+ complete).
 
 ### Added in the follow-up passes
 
-- **WebSocket transport, fully implemented** (§5.2): a Node feed server
+- **WebSocket transport, fully implemented**: a Node feed server
   (`npm run feed-server`) running the same seeded price model, and a worker-side
   transport sharing the same binary codec, sequencing and recovery as the
   simulator. Verified live: ticks over the wire through the same conflation
   path, disconnect → down → recovery with 0 false gaps, seamless switch back.
 - **Binary wire codec** (`src/worker/codec.ts`) with property-tested bit-exact
   round-trips, and **ADR 007 (binary over JSON encoding)** — completing the
-  full six-topic ADR set §11 names.
+  full planned ADR set.
 - Design-review refinements: per-theme flash tint, unambiguous disabled states,
   engine flash parity, copy hygiene in visible UI strings.
 - The hand-built engine's first dedicated axe audit found and fixed a real

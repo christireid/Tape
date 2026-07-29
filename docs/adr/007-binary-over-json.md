@@ -7,7 +7,7 @@
 Two boundaries carry market data, and both are hot:
 
 1. **Worker → main thread**, up to once per conflation window, carrying every changed row.
-2. **Feed server → worker** (the WebSocket transport, §5.2), carrying raw ticks at up to
+2. **Feed server → worker** (the WebSocket transport), carrying raw ticks at up to
    50,000/sec.
 
 The default encoding on both boundaries would be JSON. At these rates JSON is not a neutral
@@ -56,6 +56,6 @@ JSON where they are proportional to user actions.
 - The worker's sequencing, conflation and recovery code cannot tell the transports apart — the
   simulator writes quotes directly, the wire decodes into the same quote objects, and everything
   downstream (`checkSequence`, the conflation set, the flush) is shared. That sharing was the
-  acceptance test for the transport seam (§5.2), and the disconnect-fault path proves it: a
+  acceptance test for the transport seam, and the disconnect-fault path proves it: a
   dropped socket surfaces as `down`, reconnects with sequence baselines resynced, and the gap
   counter stays at 0.

@@ -1,7 +1,7 @@
 /* AG Grid binding. The grid runs in legacy-theme mode (theme: 'legacy') so its
    look is driven entirely by --ag-* custom properties bound to the semantic
    token layer here. Theme and density switches then propagate through CSS —
-   the grid is never re-instantiated on a switch (spec §6.2). */
+   the grid is never re-instantiated on a switch. */
 
 .grid-host.ag-theme-quartz {
   --ag-background-color: var(--surface-base);

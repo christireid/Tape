@@ -1,4 +1,4 @@
-// The WebSocket feed server (§5.2). Runs the SAME price model and the SAME
+// The WebSocket feed server. Runs the SAME price model and the SAME
 // binary codec as the in-browser simulator — that sharing is the point: the
 // worker's sequencing, conflation and recovery code cannot tell the transports
 // apart, and the universe is derived deterministically on both ends from the
@@ -9,7 +9,7 @@
 // Runs under Node 22's type stripping — no build step:
 //   node --experimental-strip-types server/feed-server.ts
 //
-// Deployment note (spec §5.2): host on a persistent VM or Durable Objects, not
+// Deployment note: host on a persistent VM or Durable Objects, not
 // a function platform — a continuous tick feed needs persistent in-memory
 // state. The public demo deliberately does not depend on this server.
 

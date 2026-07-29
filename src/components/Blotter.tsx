@@ -24,7 +24,7 @@ const ABLATE_NOFLASH = ABLATE.includes('noflash');
 
 /**
  * Change-bar cell renderer — a plain class that writes to two DOM nodes
- * directly. No React reconciliation on the hot path (§5.3). The largest visual
+ * directly. No React reconciliation on the hot path. The largest visual
  * gain per line in the app: the blotter becomes pre-attentively scannable.
  */
 class ChangeBarRenderer implements ICellRendererComp<BlotterRow> {
@@ -106,7 +106,7 @@ export function Blotter({ onSelect, filter, rowHeight }: Props): React.JSX.Eleme
 
   const seed = (api: GridApi<BlotterRow>): void => {
     genRef.current = store.generation;
-    api.flushAsyncTransactions(); // drain queued transactions first (§5.3)
+    api.flushAsyncTransactions(); // drain queued transactions first
     api.setGridOption('rowData', store.rows.slice());
   };
 
@@ -141,7 +141,7 @@ export function Blotter({ onSelect, filter, rowHeight }: Props): React.JSX.Eleme
     apiRef.current?.setGridOption('quickFilterText', filter);
   }, [filter]);
 
-  // Density change → update row height without remounting the grid (§6.2).
+  // Density change → update row height without remounting the grid.
   useEffect(() => {
     const api = apiRef.current;
     if (!api) return;

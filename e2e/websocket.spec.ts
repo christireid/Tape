@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 
 // The WebSocket transport, end to end: the Node feed server runs the same
 // model and codec as the browser; the worker's sequencing, conflation and
-// recovery must be indistinguishable across transports (§5.2, ADR 007).
+// recovery must be indistinguishable across transports (ADR 007).
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 8181;

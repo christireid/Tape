@@ -6,7 +6,7 @@ export type PriceFormat = 'decimal' | '32nds';
 
 /** Static instrument definition — never changes after the universe is built. */
 export interface Instrument {
-  /** Stable, unique identifier. Asserted unique at bootstrap (§5.1). */
+  /** Stable, unique identifier. Asserted unique at bootstrap. */
   id: string;
   /** Numeric index into the universe array — the hot path speaks in indices. */
   index: number;
@@ -23,7 +23,7 @@ export interface Instrument {
   jumpP: number;
   spreadTicks: number;
   activity: number;
-  /** Starting mid, drawn from a domain-plausible anchor range (§5.1). */
+  /** Starting mid, drawn from a domain-plausible anchor range. */
   anchorMid: number;
   prevClose: number;
 }
@@ -120,7 +120,7 @@ export interface Telemetry {
   longTaskSupported: boolean;
   msgsInPerSec: number;
   rowsOutPerSec: number;
-  /** Derived from the two counters above, to one decimal (§5.4). */
+  /** Derived from the two counters above, to one decimal. */
   conflationRatio: number;
   gapsRecovered: number;
   heapMB: number | null;
@@ -144,7 +144,7 @@ export interface FeedConfig {
   conflateMs: ConflationWindow;
   transport: TransportKind;
   seed: number;
-  /** Simulated wall-clock used to derive futures month codes (§5.1). */
+  /** Simulated wall-clock used to derive futures month codes. */
   nowMs: number;
 }
 

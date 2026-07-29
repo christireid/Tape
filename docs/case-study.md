@@ -45,7 +45,7 @@ than bolted on at the end.
 
 ## What the build taught (the failure modes)
 
-Every one of these was hit and is now guarded (spec §10): duplicate instrument ids aliasing price
+Every one of these was hit while building, and each is now guarded: duplicate instrument ids aliasing price
 state and inflating the gap counter; `performance.now()` compared across the worker boundary
 producing a meaningless p50; measured-`dt` message production compounding into a 50% overshoot;
 queued async transactions resolving against a replaced row set on a universe swap; a CSS

@@ -1,7 +1,7 @@
 /* Application styles. Semantic and component tokens only — no primitives, no
    raw colour (enforced by conformance). Panels are flex columns, never grid
    rows: an optional child (the stale banner) must not push the body into an
-   implicit zero-height auto row (§6.3, §10). */
+   implicit zero-height auto row. */
 
 * {
   box-sizing: border-box;

@@ -1,7 +1,7 @@
 // The store that lives outside React. It owns the worker, holds the full row
 // snapshot, and exposes two channels:
 //   • onFrame — the hot path. The grid and the canvas subscribe. Never React.
-//   • onSlow  — ~4 Hz aggregates. Exactly one React hook subscribes (§7).
+//   • onSlow  — ~4 Hz aggregates. Exactly one React hook subscribes.
 //
 // All instrumentation is here too: fps from rAF, long tasks from a
 // PerformanceObserver, tick-to-screen from frame timestamps closed at paint,
@@ -110,7 +110,7 @@ export class MarketStore {
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   start(): void {
-    if (this.worker) return; // StrictMode double-mount guard (§10)
+    if (this.worker) return; // StrictMode double-mount guard
     this.startEpoch = epochNow();
     this.config = { ...this.config, nowMs: Date.now() };
     this.worker = new Worker(new URL('../worker/feed.worker.ts', import.meta.url), {
@@ -281,7 +281,7 @@ export class MarketStore {
   /**
    * Called by the active engine after its transaction queue has flushed and one
    * animation frame has painted — the first moment the number means what it
-   * claims. Both ends of the batch are sampled (§5.4).
+   * claims. Both ends of the batch are sampled.
    */
   /** Clear latency + throughput accumulators and re-arm the warm-up discard.
    * Used by the bench harness between matrix cells so each cell is measured

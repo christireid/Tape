@@ -62,7 +62,7 @@ derived from the displayed counters.
 | 9 | Keyboard-first | ✅ | 9/9 behavioural checks; palette, filter, side, faults all keyboard-driven; shortcuts suppressed in inputs |
 | 10 | Design quality | ✅ | 9/9 automated design conformance; tabular numerals, prices on the tick grid, domain-authentic vocabulary and symbology, modelled data labelled |
 
-**Score: 10 / 10** on the rubric (§12). The rubric measures the build; the release bar (§11) is
+**Score: 10 / 10** on the build rubric. The rubric measures the build; the release checklist is
 tracked separately below so the 10/10 does not read as covering everything.
 
 ## First paint (cold cache)
@@ -71,15 +71,15 @@ Measured with `bench/first-paint.mjs`, 5 fresh browser contexts against the prod
 first contentful paint **272 / 292 / 312 ms** (min / median / max); live blotter — first row of
 real feed data on screen — **533 / 688 / 746 ms**. Target was under 2 s; measured, not assumed.
 
-## Definition-of-done status (release bar, §11)
+## Definition-of-done status (the release checklist)
 
-| §11 item | Status |
+| Release item | Status |
 |---|---|
 | Live deployment, first paint < 2 s cold | PARTIAL — first paint **measured at 292 ms median FCP, 688 ms to live data**; a GitHub Pages deploy workflow is committed (fires on merge to `main` — enabling Pages on the repo is the one manual step left) |
 | Synthetic-data label + README disclosure | DONE |
 | Performance page with committed history | DONE — `/performance.html`, built from the committed `bench/results/` history |
 | Accessibility report published | DONE |
-| Six ADRs minimum | DONE — seven (001–007), covering every topic §11 names including binary-over-JSON encoding; the ADR 004 ablations are measured and committed |
+| Six ADRs minimum | DONE — seven (001–007), including binary-over-JSON encoding; the ADR 004 ablations are measured and committed |
 | 90-second recording + case study | DONE — case study written; walkthrough recorded to `docs/walkthrough.webm` via the committed `bench/record-walkthrough.mjs` |
 | CHANGELOG, LICENSE, CONTRIBUTING, CI badges | DONE (badges wired; live badge URLs attach on first CI run) |
 

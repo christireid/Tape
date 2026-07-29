@@ -82,7 +82,7 @@ export function App(): React.JSX.Element {
     [setEngine, toggleDensity, cycleTheme],
   );
 
-  // Keyboard model. Shortcuts suppressed while a text input has focus (§5.8).
+  // Keyboard model. Shortcuts suppressed while a text input has focus.
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       const meta = e.metaKey || e.ctrlKey;

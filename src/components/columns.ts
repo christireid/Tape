@@ -67,7 +67,7 @@ export const COLUMNS: ColSpec[] = [
   { id: 'sector', label: 'Sector', width: 118, numeric: false, text: (r) => r.sector },
 ];
 
-/** Percent change clamped to ±4% so ordinary moves stay readable (§5.3). */
+/** Percent change clamped to ±4% so ordinary moves stay readable. */
 export const CHG_CLAMP = 4;
 
 export function changeBarWidthPct(changePct: number): number {

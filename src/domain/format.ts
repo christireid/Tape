@@ -1,5 +1,5 @@
 // Every number formatter, centralised. Precision rules are one decision here
-// rather than scattered across components (spec §6.3).
+// rather than scattered across components.
 //
 // The typographic minus (U+2212) is used consistently for negative money and
 // change — never the hyphen-minus — so decimals align under tabular figures.

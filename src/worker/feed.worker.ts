@@ -1,7 +1,7 @@
 // The feed worker. Everything on the tick path lives here: transport,
 // per-instrument sequencing, conflation (last-value-wins), position keeping and
 // P&L. The main thread receives finished arrays and never does O(positions)
-// work per tick (spec §4).
+// work per tick.
 
 import {
   FRAME_FIELD_COUNT,
@@ -61,7 +61,7 @@ const positions = new Map<number, Pos>();
 const orders = new Map<string, Order>();
 
 // ── WebSocketTransport ───────────────────────────────────────────────────────
-// The second transport (§5.2). It shares everything that matters with the
+// The second transport. It shares everything that matters with the
 // simulator: the same codec (codec.ts, also imported by the feed server), the
 // same per-instrument sequence check, the same conflation set and flush. Only
 // tick *production* differs — the server produces, this decodes.

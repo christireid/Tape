@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // SPA. Not Next.js — there is no SEO surface or server-render benefit for an
-// authenticated real-time tool. See ADR 000 / spec §2.
+// authenticated real-time tool.
 export default defineConfig({
   // Relative base so the built app serves from any static host or subpath
   // (GitHub Pages project sites included) with no configuration.

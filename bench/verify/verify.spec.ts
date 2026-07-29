@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 // axe across all six theme x density combinations, plus a soak with heap
-// sampled every second (spec §8). Fails on any WCAG 2 A/AA violation, any
+// sampled every second. Fails on any WCAG 2 A/AA violation, any
 // console error, or heap growth.
 
 const THEMES = ['dark', 'light', 'hc'] as const;

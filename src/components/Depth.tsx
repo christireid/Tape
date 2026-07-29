@@ -4,9 +4,9 @@ import { formatPrice, formatSize } from '../domain/format.ts';
 import type { BlotterRow, DepthLevel } from '../domain/types.ts';
 
 // Depth ladder: top of book from the feed, deeper levels modelled — and the
-// distinction is labelled in the UI (§5.7). Presenting modelled depth as
-// received depth is the kind of small dishonesty that costs a technical
-// interview.
+// distinction is labelled in the UI. Presenting modelled depth as
+// received depth is the kind of small dishonesty a domain reader will not
+// forgive.
 function buildLadder(row: BlotterRow): { bids: DepthLevel[]; asks: DepthLevel[] } {
   const step = row.tickSize;
   const bids: DepthLevel[] = [{ price: row.bid, size: row.bidSize, fromFeed: true }];

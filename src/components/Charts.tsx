@@ -8,7 +8,7 @@ function cssVar(name: string): string {
 
 // Price tape — uPlot canvas, 0.25s bars, 600-point ring buffer, y-axis on the
 // right (finance convention), rebuilt on theme change via a MutationObserver
-// scoped to data-theme and on resize via a ResizeObserver (§5.7).
+// scoped to data-theme and on resize via a ResizeObserver.
 export function PriceChart({ index }: { index: number }): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
   const plotRef = useRef<uPlot | null>(null);

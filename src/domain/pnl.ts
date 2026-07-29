@@ -1,5 +1,5 @@
 // Position accounting, pure and testable. Floating point in position keeping is
-// where the real bugs live (spec §8), so this is isolated from the worker and
+// where the real bugs live, so this is isolated from the worker and
 // exercised directly by unit + property tests.
 
 import type { Side } from './types.ts';

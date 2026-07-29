@@ -1,7 +1,7 @@
 // Seeded, deterministic synthetic market model. Isomorphic — no DOM.
 //
 // Two domain-plausibility invariants are asserted at bootstrap, exactly as
-// identifier uniqueness is (spec §5.1):
+// identifier uniqueness is:
 //   1. every instrument id is unique;
 //   2. every anchor mid falls inside a domain-plausible range for its symbol.
 // Both throw rather than warn, because aliased state and impossible prices are
@@ -133,7 +133,7 @@ const SECTORS = [
 
 // Invented four-letter roots. Deliberately not real NYSE/Nasdaq single-name
 // tickers, so a finance reader never mistakes the synthetic universe for real
-// names (the 1.0 build collided with EVR / ARC / CDX / DYN — spec §5.1).
+// names (an earlier build collided with EVR, ARC, CDX and DYN).
 const EQUITY_ROOTS = [
   'QVEX', 'ZYRA', 'VELM', 'TORQ', 'KANE', 'PLYX', 'BRYN', 'DWEL',
   'FYNT', 'GLOV', 'HXCO', 'JORB', 'KRYP', 'LUME', 'MVRK', 'NXOR',

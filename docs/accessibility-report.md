@@ -32,7 +32,7 @@ made them one-line corrections:
 
 ## Manual keyboard walkthrough
 
-The application is fully operable with no mouse (spec §1.1.7 — how these users actually work):
+The application is fully operable with no mouse — that is how these users actually work:
 
 - `⌘K` / `Ctrl+K` opens the command palette focused; arrow keys navigate, Enter runs, Escape
   closes and restores focus to the prior element.

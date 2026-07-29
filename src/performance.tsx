@@ -1,4 +1,4 @@
-// The performance-trend page (§11): reads the committed bench history from
+// The performance-trend page: reads the committed bench history from
 // bench/results/ at build time and charts tick-to-screen p95 per engine across
 // runs. Static — no live data, no backend; the history is the repo's.
 
@@ -77,7 +77,7 @@ function Trend(): React.JSX.Element {
           TAPE
         </span>
         <span className="muted">performance history · committed bench runs</span>
-        <a href="/" style={{ marginLeft: 'auto', color: 'var(--accent)' }}>
+        <a href="./" style={{ marginLeft: 'auto', color: 'var(--accent)' }}>
           ← app
         </a>
       </header>
