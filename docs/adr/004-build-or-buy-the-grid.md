@@ -17,14 +17,14 @@ the numbers below are the most recent committed run in `bench/results/`.
 <!-- ADR_BENCH_TABLE_START -->
 | Engine | Universe | Rate | msgs/sec | rows/sec | FPS | t2s p50 / p95 / p99 |
 |---|---|---|---|---|---|---|
-| aggrid | 1,200 | 8k | 7,940 | 7,532 | 60 | 21.7 / 35.3 / 43.7 ms |
-| aggrid | 1,200 | 25k | 25,498 | 21,176 | 60 | 23.9 / 40 / 42.7 ms |
-| aggrid | 1,200 | 50k | 49,560 | 34,654 | 61 | 28.9 / 46.3 / 56.5 ms |
-| aggrid | 5,000 | 50k | 49,821 | 44,416 | 57 | 39 / 63.4 / 80.6 ms |
-| virtual | 1,200 | 8k | 8,074 | 7,629 | 60 | 18.7 / 33.5 / 35.3 ms |
-| virtual | 1,200 | 25k | 25,315 | 21,077 | 60 | 20.7 / 34.9 / 37.5 ms |
-| virtual | 1,200 | 50k | 49,981 | 34,521 | 60 | 24.9 / 36.9 / 40 ms |
-| virtual | 5,000 | 50k | 49,960 | 44,344 | 60 | 29.4 / 44.7 / 48.4 ms |
+| aggrid | 1,200 | 8k | 7,920 | 7,524 | 60 | 20 / 34.8 / 37.2 ms |
+| aggrid | 1,200 | 25k | 25,448 | 21,068 | 60 | 24 / 39.3 / 42.4 ms |
+| aggrid | 1,200 | 50k | 49,240 | 34,394 | 60 | 26.4 / 43.6 / 47.3 ms |
+| aggrid | 5,000 | 50k | 51,360 | 45,752 | 59 | 38.5 / 62.4 / 73.7 ms |
+| virtual | 1,200 | 8k | 7,909 | 7,489 | 60 | 18.7 / 31.9 / 34.2 ms |
+| virtual | 1,200 | 25k | 25,682 | 21,325 | 60 | 20.7 / 34.7 / 35.8 ms |
+| virtual | 1,200 | 50k | 50,140 | 34,450 | 59 | 23.9 / 36 / 38.4 ms |
+| virtual | 5,000 | 50k | 50,460 | 44,918 | 54 | 30.1 / 45.4 / 48.7 ms |
 <!-- ADR_BENCH_TABLE_END -->
 
 Note on reading the AG Grid latencies: every figure includes the conflation window (16 ms at the
@@ -56,9 +56,12 @@ contribution to the published figures, confirming the latencies are partly *conf
 Disabling cell flash is nearly neutral at this load on this host; its paint cost is absorbed while
 the frame budget holds. The queue, not the flash, is the tunable that matters.
 
-The published axe-core results are captured on the **AG Grid engine** (the default); the
-hand-built engine's accessibility surface is hand-written and re-run through `npm run audit`, but
-has not been through the same audit depth — see the accessibility report.
+**Both engines are in the axe gate** (`npm run audit` runs axe on each). The hand-built engine's
+accessibility surface is hand-written, and its first dedicated audit proved the point this
+paragraph used to caveat: it failed `aria-required-children` (an unlabelled sizer div between
+`role="grid"` and its rows, and imperative cells without `gridcell`). Both fixed; the test that
+found them is permanent. A library ships this audited; hand-rolling it means finding these
+yourself — see the accessibility report.
 
 ## Reading the result honestly
 
@@ -66,12 +69,13 @@ On this runner both engines sustain 50,000 msgs/sec, and the comparison is more 
 headline collapse — which is the honest thing to report rather than a more dramatic number from a
 weaker machine. Read the two columns that actually separate the engines:
 
-- **Latency.** The virtualizer is lower across the whole matrix — its p99 stays at 35–48 ms while
-  AG Grid's climbs from ~44 ms to ~81 ms. At 5,000 instruments AG Grid's tail is roughly **1.7×**
-  the virtualizer's.
-- **Frame rate under the largest load.** Both hold ~60 fps at 1,200 instruments; at 5,000×50k
-  AG Grid dips to **57 fps** while the virtualizer holds 60. On a CPU-limited host that dip
-  deepens — the mechanism below predicts exactly that.
+- **Latency.** The virtualizer is lower across the whole matrix — its p99 stays at ~34–49 ms while
+  AG Grid's climbs from ~37 ms to ~74 ms. At 5,000 instruments AG Grid's tail is roughly **1.5×**
+  the virtualizer's, and that gap is stable across committed runs.
+- **Frame rate.** Parity within run-to-run noise on this host: across the committed runs each
+  engine has measured anywhere from 54 to 61 fps at the heaviest cell, with neither consistently
+  ahead. The honest reading is that this runner does not separate the engines on fps — a
+  CPU-limited host would, and the mechanism below says in which direction.
 
 Three reasons, and only the first is a fair criticism of the library:
 
@@ -95,9 +99,9 @@ for both.
 
 ## Consequences
 
-- At the largest universe the default engine carries higher latency and a small frame-rate dip
-  (widening on constrained hosts); the status bar reports fps and latency per engine honestly
-  rather than hiding it.
+- At the largest universe the default engine carries a measurably higher latency tail (widening on
+  constrained hosts); the status bar reports fps and latency per engine honestly rather than
+  hiding it.
 - Both engines must be kept working against every store change; the bench matrix runs both, so a
   regression in either fails CI.
 - The comparison creates an obligation to keep the fairness record current: any AG Grid option

@@ -1,0 +1,102 @@
+{
+  "capturedAt": "2026-07-29T03:24:28.685Z",
+  "viewport": "1600x940",
+  "readings": [
+    {
+      "engine": "aggrid",
+      "universe": 1200,
+      "rate": 8000,
+      "msgsInPerSec": 7920,
+      "rowsOutPerSec": 7524,
+      "fps": 60,
+      "t2sP50": 20,
+      "t2sP95": 34.8,
+      "t2sP99": 37.2,
+      "gaps": 0
+    },
+    {
+      "engine": "aggrid",
+      "universe": 1200,
+      "rate": 25000,
+      "msgsInPerSec": 25448,
+      "rowsOutPerSec": 21068,
+      "fps": 60,
+      "t2sP50": 24,
+      "t2sP95": 39.3,
+      "t2sP99": 42.4,
+      "gaps": 0
+    },
+    {
+      "engine": "aggrid",
+      "universe": 1200,
+      "rate": 50000,
+      "msgsInPerSec": 49240,
+      "rowsOutPerSec": 34394,
+      "fps": 60,
+      "t2sP50": 26.4,
+      "t2sP95": 43.6,
+      "t2sP99": 47.3,
+      "gaps": 0
+    },
+    {
+      "engine": "aggrid",
+      "universe": 5000,
+      "rate": 50000,
+      "msgsInPerSec": 51360,
+      "rowsOutPerSec": 45752,
+      "fps": 59,
+      "t2sP50": 38.5,
+      "t2sP95": 62.4,
+      "t2sP99": 73.7,
+      "gaps": 0
+    },
+    {
+      "engine": "virtual",
+      "universe": 1200,
+      "rate": 8000,
+      "msgsInPerSec": 7909,
+      "rowsOutPerSec": 7489,
+      "fps": 60,
+      "t2sP50": 18.7,
+      "t2sP95": 31.9,
+      "t2sP99": 34.2,
+      "gaps": 0
+    },
+    {
+      "engine": "virtual",
+      "universe": 1200,
+      "rate": 25000,
+      "msgsInPerSec": 25682,
+      "rowsOutPerSec": 21325,
+      "fps": 60,
+      "t2sP50": 20.7,
+      "t2sP95": 34.7,
+      "t2sP99": 35.8,
+      "gaps": 0
+    },
+    {
+      "engine": "virtual",
+      "universe": 1200,
+      "rate": 50000,
+      "msgsInPerSec": 50140,
+      "rowsOutPerSec": 34450,
+      "fps": 59,
+      "t2sP50": 23.9,
+      "t2sP95": 36,
+      "t2sP99": 38.4,
+      "gaps": 0
+    },
+    {
+      "engine": "virtual",
+      "universe": 5000,
+      "rate": 50000,
+      "msgsInPerSec": 50460,
+      "rowsOutPerSec": 44918,
+      "fps": 54,
+      "t2sP50": 30.1,
+      "t2sP95": 45.4,
+      "t2sP99": 48.7,
+      "gaps": 0
+    }
+  ]
+}

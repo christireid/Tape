@@ -10,11 +10,16 @@ surveyed); the automated target below is WCAG 2 A + AA because that is what axe-
 ## Automated (axe-core)
 
 `npm run verify` runs axe-core across all six theme × density combinations — dark, light and
-high-contrast, each at compact and comfortable density — on the AG Grid engine (the default). The
-gate is **zero WCAG 2 A/AA violations**, and CI fails on any. The hand-built virtual engine is
-re-run through the same `npm run audit` axe pass; its accessibility surface is hand-written and has
-not been through the same audit depth as the library's, which is stated plainly in
-[ADR 004](adr/004-build-or-buy-the-grid.md) rather than glossed.
+high-contrast, each at compact and comfortable density — on the AG Grid engine (the default), and
+`npm run audit` runs axe against **both engines**. The gate is **zero WCAG 2 A/AA violations**,
+and CI fails on any.
+
+The hand-built engine's surface is hand-written, and its first dedicated axe pass demonstrated why
+that caveat mattered: it failed `aria-required-children` — the virtualizer's sizer div sat between
+`role="grid"` and its rows with no role, and the imperatively-created cells carried no `gridcell`
+role. A library grid ships with this already audited; a hand-rolled one means finding these
+yourself, which is precisely the trade [ADR 004](adr/004-build-or-buy-the-grid.md) prices in. Both
+defects are fixed and the test that found them is permanent.
 
 Two classes of finding were fixed during the build and are worth recording because the token layer
 made them one-line corrections:

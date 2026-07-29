@@ -7,18 +7,18 @@ with the host). Reproduce with `npm run bench`, `npm run audit`, `npm run verify
 ## Benchmark matrix
 
 <!-- SCORECARD_BENCH_TABLE_START -->
-Captured 2026-07-29T02:03:23.159Z, 1600x940.
+Captured 2026-07-29T03:24:28.685Z, 1600x940.
 
 | Engine | Universe | Rate | msgs/sec in | rows/sec out | FPS | tick-to-screen p50 / p95 / p99 |
 |---|---|---|---|---|---|---|
-| aggrid | 1,200 | 8k | 7,940 | 7,532 | 60 | 21.7 / 35.3 / 43.7 ms |
-| aggrid | 1,200 | 25k | 25,498 | 21,176 | 60 | 23.9 / 40 / 42.7 ms |
-| aggrid | 1,200 | 50k | 49,560 | 34,654 | 61 | 28.9 / 46.3 / 56.5 ms |
-| aggrid | 5,000 | 50k | 49,821 | 44,416 | 57 | 39 / 63.4 / 80.6 ms |
-| virtual | 1,200 | 8k | 8,074 | 7,629 | 60 | 18.7 / 33.5 / 35.3 ms |
-| virtual | 1,200 | 25k | 25,315 | 21,077 | 60 | 20.7 / 34.9 / 37.5 ms |
-| virtual | 1,200 | 50k | 49,981 | 34,521 | 60 | 24.9 / 36.9 / 40 ms |
-| virtual | 5,000 | 50k | 49,960 | 44,344 | 60 | 29.4 / 44.7 / 48.4 ms |
+| aggrid | 1,200 | 8k | 7,920 | 7,524 | 60 | 20 / 34.8 / 37.2 ms |
+| aggrid | 1,200 | 25k | 25,448 | 21,068 | 60 | 24 / 39.3 / 42.4 ms |
+| aggrid | 1,200 | 50k | 49,240 | 34,394 | 60 | 26.4 / 43.6 / 47.3 ms |
+| aggrid | 5,000 | 50k | 51,360 | 45,752 | 59 | 38.5 / 62.4 / 73.7 ms |
+| virtual | 1,200 | 8k | 7,909 | 7,489 | 60 | 18.7 / 31.9 / 34.2 ms |
+| virtual | 1,200 | 25k | 25,682 | 21,325 | 60 | 20.7 / 34.7 / 35.8 ms |
+| virtual | 1,200 | 50k | 50,140 | 34,450 | 59 | 23.9 / 36 / 38.4 ms |
+| virtual | 5,000 | 50k | 50,460 | 44,918 | 54 | 30.1 / 45.4 / 48.7 ms |
 <!-- SCORECARD_BENCH_TABLE_END -->
 
 60 s soak at 25,000 msgs/sec (`usedJSHeapSize`, sampled every second): min **6.7 MB**, max

@@ -25,24 +25,26 @@ most recent committed run.
 <!-- BENCH_TABLE_START -->
 | Engine | Universe | Rate | msgs/sec in | rows/sec out | FPS | tick-to-screen p50 / p95 / p99 |
 |---|---|---|---|---|---|---|
-| aggrid | 1,200 | 8k | 7,940 | 7,532 | 60 | 21.7 / 35.3 / 43.7 ms |
-| aggrid | 1,200 | 25k | 25,498 | 21,176 | 60 | 23.9 / 40 / 42.7 ms |
-| aggrid | 1,200 | 50k | 49,560 | 34,654 | 61 | 28.9 / 46.3 / 56.5 ms |
-| aggrid | 5,000 | 50k | 49,821 | 44,416 | 57 | 39 / 63.4 / 80.6 ms |
-| virtual | 1,200 | 8k | 8,074 | 7,629 | 60 | 18.7 / 33.5 / 35.3 ms |
-| virtual | 1,200 | 25k | 25,315 | 21,077 | 60 | 20.7 / 34.9 / 37.5 ms |
-| virtual | 1,200 | 50k | 49,981 | 34,521 | 60 | 24.9 / 36.9 / 40 ms |
-| virtual | 5,000 | 50k | 49,960 | 44,344 | 60 | 29.4 / 44.7 / 48.4 ms |
+| aggrid | 1,200 | 8k | 7,920 | 7,524 | 60 | 20 / 34.8 / 37.2 ms |
+| aggrid | 1,200 | 25k | 25,448 | 21,068 | 60 | 24 / 39.3 / 42.4 ms |
+| aggrid | 1,200 | 50k | 49,240 | 34,394 | 60 | 26.4 / 43.6 / 47.3 ms |
+| aggrid | 5,000 | 50k | 51,360 | 45,752 | 59 | 38.5 / 62.4 / 73.7 ms |
+| virtual | 1,200 | 8k | 7,909 | 7,489 | 60 | 18.7 / 31.9 / 34.2 ms |
+| virtual | 1,200 | 25k | 25,682 | 21,325 | 60 | 20.7 / 34.7 / 35.8 ms |
+| virtual | 1,200 | 50k | 50,140 | 34,450 | 59 | 23.9 / 36 / 38.4 ms |
+| virtual | 5,000 | 50k | 50,460 | 44,918 | 54 | 30.1 / 45.4 / 48.7 ms |
 <!-- BENCH_TABLE_END -->
 
 Two readings worth stating plainly. First, the AG Grid latencies include deliberate delay — the
 conflation window (16 ms default) plus up to 32 ms of async transaction wait — so the p50 is
-largely configuration, not raw overhead. Second, the engines separate on **latency**, not a frame-
-rate collapse on this runner: the hand-built engine's tail stays ~35–48 ms across the matrix while
-AG Grid's climbs to ~81 ms at 5,000 instruments, where AG Grid also dips to 57 fps. That is not a
-claim the library is slow — it does far less — and
-[ADR 004](docs/adr/004-build-or-buy-the-grid.md) reads the comparison honestly, including what
-would close the gap for either engine and why a CPU-limited host widens it.
+largely configuration, not raw overhead. Second, on this runner the engines separate on
+**latency**, not frame rate: fps is parity-within-noise across committed runs (both engines hold
+54–60 at the heaviest cell, varying run to run), while the latency gap is durable — the hand-built
+engine's p99 stays ~34–49 ms across the matrix and AG Grid's climbs to ~74 ms at 5,000
+instruments, roughly **1.5×** the virtualizer's tail. That is not a claim the library is slow — it
+does far less — and [ADR 004](docs/adr/004-build-or-buy-the-grid.md) reads the comparison
+honestly, including what would close the gap for either engine and why a CPU-limited host widens
+it.
 
 60-second soak at 25,000 msgs/sec: heap **6.7 MB → 6.7 MB, slope 0.00 MB/min** over 60 per-second
 samples (`usedJSHeapSize`, Chromium-only). Sequence gaps in steady state: 0. Console errors across
@@ -142,8 +144,10 @@ PASS  Conflation ratio derived from the displayed counters
 ```
 
 Accessibility: **zero axe-core WCAG 2 A/AA violations** in dark, light and high-contrast, at both
-densities — measured on the AG Grid engine (the default) and re-run against the hand-built engine.
-Sign is always carried by shape as well as colour. `aria-live` announces order state transitions
+densities — and the axe gate runs against **both engines**. Adding the hand-built engine to the
+gate immediately found a real defect in its hand-written grid semantics (`aria-required-children`),
+now fixed with the test kept — the [accessibility report](docs/accessibility-report.md) tells that
+story. Sign is always carried by shape as well as colour. `aria-live` announces order state transitions
 only — announcing every price change at 50 updates/sec would make the application unusable with a
 screen reader, and that decision is documented in the
 [accessibility report](docs/accessibility-report.md) rather than defaulted into.

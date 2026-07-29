@@ -10,7 +10,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const RESULTS = join(HERE, 'results');
 
-const files = readdirSync(RESULTS).filter((f) => f.endsWith('.json')).sort();
+const files = readdirSync(RESULTS)
+  .filter((f) => f.endsWith('.json') && !f.startsWith('ablation'))
+  .sort();
 if (files.length === 0) {
   console.error('no results');
   process.exit(1);
