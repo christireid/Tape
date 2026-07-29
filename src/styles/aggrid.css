@@ -77,10 +77,12 @@
 .grid-host .ag-cell.ag-column-first {
   background-color: inherit;
 }
-/* Cell-change flash: a dark, token-based tint so the green/red glyphs keep
-   their contrast during the flash (the default light-quartz teal fails AA). */
+/* Cell-change flash: the per-theme --flash-tint token — tuned so the flash
+   reads as a shimmer of activity, never a selected-column slab, and the
+   green/red glyphs keep AA contrast through it (the default light-quartz
+   teal fails both). */
 .grid-host .ag-cell-data-changed {
-  background-color: color-mix(in srgb, var(--accent) 24%, var(--surface-base)) !important;
+  background-color: var(--flash-tint) !important;
 }
 
 .grid-host .ag-cell.num,

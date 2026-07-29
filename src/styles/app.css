@@ -384,12 +384,12 @@ select,
 }
 @keyframes flashUp {
   from {
-    background: color-mix(in srgb, var(--status-positive) 40%, transparent);
+    background: color-mix(in srgb, var(--status-positive) 26%, transparent);
   }
 }
 @keyframes flashDown {
   from {
-    background: color-mix(in srgb, var(--status-negative) 40%, transparent);
+    background: color-mix(in srgb, var(--status-negative) 26%, transparent);
   }
 }
 
@@ -649,7 +649,9 @@ select,
   transition: opacity var(--motion-control);
 }
 .submit:disabled {
-  opacity: 0.4;
+  background: var(--surface-raised);
+  border-color: var(--border-default);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 

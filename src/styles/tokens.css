@@ -97,6 +97,8 @@
 
   --bar-positive: var(--green-500);
   --bar-negative: var(--red-500);
+  /* cell-change flash tint — strong enough to shimmer, never a selection slab */
+  --flash-tint: color-mix(in srgb, var(--accent) 16%, var(--surface-base));
   color-scheme: dark;
 }
 
@@ -135,6 +137,7 @@
 
   --bar-positive: var(--green-500);
   --bar-negative: var(--red-500);
+  --flash-tint: color-mix(in srgb, var(--accent) 7%, var(--surface-base));
   color-scheme: light;
 }
 
@@ -173,6 +176,7 @@
 
   --bar-positive: #4ade80;
   --bar-negative: #ff8080;
+  --flash-tint: color-mix(in srgb, var(--accent) 24%, var(--surface-base));
   color-scheme: dark;
 }
 
