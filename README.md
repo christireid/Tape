@@ -19,7 +19,7 @@ Every number it shows about the market is synthetic. Every number it shows about
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"/>
   <img src="https://img.shields.io/badge/axe--core-0%20violations-brightgreen" alt="zero axe violations"/>
   <img src="https://img.shields.io/badge/console%20errors-0-brightgreen" alt="zero console errors"/>
-  <img src="https://img.shields.io/badge/tests-30%20unit%20%C2%B7%2010%20e2e-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-34%20unit%20%C2%B7%2010%20e2e-brightgreen" alt="tests"/>
 </p>
 
 ![The live tape — 1,200 instruments, cell flashes, live positions and P&L](docs/media/live-tape.gif)
@@ -33,6 +33,67 @@ Front-office trading screens are the most demanding surface in mainstream UI eng
 Tape doesn't ask. It **measures its own tick-to-screen latency** — the wall-clock time from a price being generated to the pixel changing — on one absolute clock, closed only after the grid has flushed and the frame has painted. It publishes the distribution live in its own status bar, and a benchmark harness drives the full matrix in CI and commits the results as JSON. The numbers below were written by machines, not typed by hand.
 
 The market is a seeded synthetic model with no backend, built so a domain reader can't catch it faking: AUD/USD stays below parity, crude trades in the $70s, treasury futures quote in 32nds (`112'065`), and every future carries the correct front-month code for the simulated date.
+
+---
+
+## A tour, one panel at a time
+
+Every frame below is captured from the running build by `node bench/readme-media.mjs`. Nothing here is a mockup.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Price cells flash on change** — green up, red down, sign carried by a glyph so colour is never the only signal.
+
+<img src="docs/media/cell-flash.gif" alt="Blotter rows flashing green and red as prices change"/>
+
+</td>
+<td width="50%" valign="top">
+
+**Orders confirm optimistically** — they appear instantly, then walk `WORKING → PARTIAL → FILLED`.
+
+<img src="docs/media/order-lifecycle.gif" alt="An order moving from WORKING to PARTIAL to FILLED"/>
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**A depth ladder**, with the modelled portion labelled as modelled rather than passed off as real.
+
+<img src="docs/media/depth.gif" alt="Depth ladder with bid and ask levels updating"/>
+
+</td>
+<td width="50%" valign="top">
+
+**A canvas price tape** — uPlot, not SVG, because 1,200 instruments of DOM nodes is not a chart ([ADR 005](docs/adr/005-canvas-charting.md)).
+
+<img src="docs/media/price-tape.gif" alt="Live canvas price chart for the selected instrument"/>
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**Positions and P&L** recompute in the worker across the whole book on every conflation window.
+
+<img src="docs/media/positions.png" alt="Positions panel showing three instruments, long and short, with unrealised P&L"/>
+
+</td>
+<td width="50%" valign="top">
+
+**Throughput and latency sparklines**, drawn from the same counters the benchmark harness reads.
+
+<img src="docs/media/throughput.gif" alt="Sparklines of messages per second and p95 latency"/>
+
+</td>
+</tr>
+</table>
+
+And the status bar, which is the whole thesis in one strip — **live tick-to-screen percentiles, updating while you watch**:
+
+![Status bar showing live p50, p95 and p99 tick-to-screen latency, throughput and conflation ratio](docs/media/status-bar.gif)
 
 ---
 
@@ -63,6 +124,14 @@ Beyond the matrix: a 60-second soak at 25,000 msgs/sec holds the heap at **6.7 M
 
 > **Why trust the latency figure at all?** One absolute clock across the worker boundary — a worker and a window don't share a time origin, so comparing `performance.now()` across it produces garbage. Closed at grid flush *plus* one painted frame. Both ends of every batch sampled, so percentiles bracket the real spread. First 3 seconds discarded as warm-up. [ADR 003](docs/adr/003-tick-to-screen-measurement.md) covers the three ways this is usually botched — I got each of them wrong first.
 
+### Two engines, one store
+
+The same rows, the same worker frames, rendered by a mature grid library and by ~200 lines of hand-written virtualization. Swapping between them is a button, not a rebuild — which is what makes the comparison in [ADR 004](docs/adr/004-build-or-buy-the-grid.md) an experiment rather than an opinion.
+
+| AG Grid Community | Hand-built virtualizer |
+|---|---|
+| ![AG Grid engine rendering the blotter](docs/media/engine-aggrid.png) | ![Hand-built virtual engine rendering the same rows](docs/media/engine-virtual.png) |
+
 ---
 
 ## Built like being wrong costs money
@@ -70,6 +139,29 @@ Beyond the matrix: a 60-second soak at 25,000 msgs/sec holds the heap at **6.7 M
 Inject a disconnect and the whole surface reacts: the health dot drops, quotes desaturate, order entry locks *with the data age stated*, then the feed recovers and the sequence checker resyncs **without a single false gap**.
 
 ![Disconnect, stale gate, recovery](docs/media/fault-recovery.gif)
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**The stale gate, close up.** Submit is disabled, and the reason and the age of the data are both on screen. A greyed button with no explanation is how people learn to click through warnings.
+
+<img src="docs/media/stale-gate.png" alt="Order ticket with submit disabled, banner reading feed is down and data age 0.7 seconds"/>
+
+</td>
+<td width="50%" valign="top">
+
+**The fat-finger gate arming.** Cross $250,000 of notional and the ticket demands you type `CONFIRM` before submit will arm at all.
+
+<img src="docs/media/fat-finger.gif" alt="Order ticket requiring the word CONFIRM to be typed before submit arms"/>
+
+</td>
+</tr>
+</table>
+
+Sequence integrity is continuous, not a boot-time check. Press `G` to punch a hole in the stream and the gap is detected, counted, and healed from the book — the counter in the header is the same one the conformance suite asserts on:
+
+![Injecting a sequence gap; the gap counter increments and the feed resyncs](docs/media/sequence-gap.gif)
 
 The order ticket treats mistakes as expensive, because on the desks this models they are:
 
@@ -107,6 +199,10 @@ You can attack the feed yourself from the toolbar: sequence gap, 4-second discon
 
 Everything on the tick path lives in a Web Worker: the feed, per-instrument sequencing with gap detection and resync, last-value-wins conflation, and the P&L recompute across the whole book. The main thread receives finished typed arrays — transferred, never copied — applies them straight to the grid and canvas, and notifies React exactly **once per ~250 ms** through a single hook. Nothing in the component tree subscribes to the frame channel. That boundary is the architectural argument of the project, and [ADR 001](docs/adr/001-react-outside-the-render-path.md) defends it.
 
+Filtering 1,200 live instruments doesn't touch that path either — the filter narrows what's rendered while the stream keeps running underneath it, at full rate:
+
+![Typing into the filter narrows 1,200 instruments live](docs/media/filter.gif)
+
 The wire is binary too. `npm run feed-server` starts a Node feed server running the *same* seeded model, sharing an 80-byte-per-tick codec with the worker that's property-tested for bit-exact round-trips. Both ends derive the identical instrument universe from the handshake, so identity never crosses the wire — [ADR 007](docs/adr/007-binary-over-json.md) does the arithmetic on why JSON was never a contender.
 
 ---
@@ -117,13 +213,40 @@ Three themes × two densities, driven entirely by a three-tier CSS token layer. 
 
 ![Theme and density switching](docs/media/themes.gif)
 
-| Light | High contrast |
+| Dark | Light | High contrast |
+|---|---|---|
+| ![Dark theme](docs/media/theme-dark.png) | ![Light theme](docs/media/theme-light.png) | ![High-contrast theme](docs/media/theme-hc.png) |
+
+Density is a token too, not a stylesheet swap — the same grid instance, 30 px rows or 22 px rows, chosen by how much of the book you need on screen at once:
+
+| Comfortable · 30 px rows | Compact · 22 px rows |
 |---|---|
-| ![Light theme](docs/media/theme-light.png) | ![High-contrast theme](docs/media/theme-hc.png) |
+| ![Blotter at comfortable density](docs/media/density-comfortable.png) | ![Blotter at compact density](docs/media/density-compact.png) |
 
 Accessibility is gated, not aspirational: **zero axe-core WCAG 2 A/AA violations** across all six theme × density combinations, on **both** rendering engines. Adding the hand-built engine to that gate immediately caught a real defect in its hand-written grid semantics — which is exactly what a gate is for. The [accessibility report](docs/accessibility-report.md) also documents the deliberate calls, like why prices are *not* announced to screen readers at 50 updates/sec.
 
-**Keyboard-first**, because that's how these users actually work:
+---
+
+## Keyboard-first, because that's how these users work
+
+<table>
+<tr>
+<td width="55%" valign="top">
+
+**⌘K opens the command palette.** Every action in the app is reachable from it, including the destructive one — *Flatten all positions* exists only here, never as a button you can brush past.
+
+<img src="docs/media/command-palette.png" alt="Command palette open over the blotter, listing every action with its shortcut"/>
+
+</td>
+<td width="45%" valign="top">
+
+**`?` prints the whole keyboard model.** No hidden shortcuts, no discovery by accident.
+
+<img src="docs/media/help-sheet.png" alt="Keyboard reference sheet listing every shortcut"/>
+
+</td>
+</tr>
+</table>
 
 | Key | Action | | Key | Action |
 |---|---|---|---|---|
@@ -153,9 +276,9 @@ PASS  Conflation ratio derived from the displayed counters
 
 That last one is the house style in miniature: the conflation ratio shown in the UI is recomputed from the two throughput counters displayed beside it, and the build fails if they disagree beyond rounding. In a project whose thesis is that its numbers can be trusted, one visibly wrong derived number would cost more than the feature is worth.
 
-The full suite: **30 unit tests** (including property-based P&L accounting and bit-exact codec round-trips), **10 end-to-end tests** across both transports, a **5-test audit** (interaction pass, keyboard, axe on both engines, live latency), the 9 conformance checks above, the six-combination axe pass, and the 60-second soak — plus a nightly benchmark that commits its own results.
+The full suite: **34 unit tests** (including property-based P&L accounting and bit-exact codec round-trips), **10 end-to-end tests** across both transports, a **5-test audit** (interaction pass, keyboard, axe on both engines, live latency), the 9 conformance checks above, the six-combination axe pass, and the 60-second soak — plus a nightly benchmark that commits its own results.
 
-**Bugs this harness caught that review missed**, which is the real argument for building it: colliding real ticker symbols in the synthetic universe; a white scroll viewport leaking through the grid's legacy stylesheet; `aria-required-children` in the hand-written grid; a frame-rate narrative my own re-measurement overturned; and a cell-flash *fade* that failed contrast mid-animation only under the high-contrast theme. Each was found by a gate, fixed, and locked behind a test.
+**Bugs this harness caught that review missed**, which is the real argument for building it: colliding real ticker symbols in the synthetic universe; a white scroll viewport leaking through the grid's legacy stylesheet; `aria-required-children` in the hand-written grid; a frame-rate narrative my own re-measurement overturned; a cell-flash *fade* that failed contrast mid-animation only under the high-contrast theme; and a malformed browser locale on the CI runner that made a vendor `Intl` call throw at module scope and rendered the app blank. Each was found by a gate, fixed, and locked behind a test.
 
 ---
 
@@ -178,6 +301,8 @@ No backend, no keys, no signup — the simulator is the default and that's a des
 
 **Stack:** React 19 · TypeScript strict with `noUncheckedIndexedAccess` · Vite · AG Grid Community (MIT — Enterprise deliberately unused, [here's what that costs](docs/adr/002-server-driven-row-model-without-enterprise.md)) · TanStack Virtual · uPlot · Web Workers · Playwright · axe-core.
 
+Every image in this README is regenerated from the running build by `node bench/readme-media.mjs` — the same script CI could run. If the UI changes, the screenshots are wrong until someone re-runs it, which is the point.
+
 ## Deep dives
 
 Every load-bearing decision has a written defense:
@@ -191,8 +316,6 @@ Every load-bearing decision has a written defense:
 7. [Binary over JSON encoding](docs/adr/007-binary-over-json.md)
 
 Plus the [performance methodology](docs/performance-methodology.md), the [accessibility report](docs/accessibility-report.md), the [case study](docs/case-study.md) with its rejected-alternatives section, and the [scorecard](docs/scorecard.md), which grades the build against a ten-point rubric and keeps an honest OPEN column beside the 10/10.
-
-Every image above is reproducible from the code: `node bench/readme-media.mjs`.
 
 ## Deliberately not built
 
