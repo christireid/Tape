@@ -6,6 +6,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/tokens.css';
 import './styles/app.css';
+import { formatInt } from './domain/format.ts';
 
 interface Reading {
   engine: string;
@@ -142,10 +143,10 @@ function Trend(): React.JSX.Element {
                 {run.readings.map((r, i) => (
                   <tr key={i}>
                     <td style={{ textAlign: 'left' }}>{r.engine}</td>
-                    <td>{r.universe.toLocaleString()}</td>
-                    <td>{r.rate.toLocaleString()}</td>
-                    <td>{r.msgsInPerSec.toLocaleString()}</td>
-                    <td>{r.rowsOutPerSec.toLocaleString()}</td>
+                    <td>{formatInt(r.universe)}</td>
+                    <td>{formatInt(r.rate)}</td>
+                    <td>{formatInt(r.msgsInPerSec)}</td>
+                    <td>{formatInt(r.rowsOutPerSec)}</td>
                     <td>{r.fps}</td>
                     <td>
                       {r.t2sP50} / {r.t2sP95} / {r.t2sP99}

@@ -77,54 +77,77 @@ export function formatPercent(pct: number, decimals = 2): string {
   return `${glyph}${Math.abs(pct).toFixed(decimals)}%`;
 }
 
-const moneyFmt = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-const moneyFmt2 = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+// Number formatting is hand-rolled rather than delegated to Intl.
+//
+// Intl.NumberFormat throws "Incorrect locale information provided" on runtimes
+// whose ICU data cannot serve the requested options — notably `notation:
+// 'compact'` on headless Chromium builds shipped with reduced ICU. Because
+// these formatters are module-level constants, that throw happened at module
+// evaluation and took the entire application down before first paint. It was
+// invisible in development (full-ICU browser) and fatal in CI.
+//
+// Hand-rolling costs a dozen lines and buys determinism: identical output on
+// every runtime, no locale data dependency, and no failure mode where the app
+// renders everywhere except the machine that verifies it.
+
+/** Insert thousands separators into a digit string. */
+function group(digits: string): string {
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+/** Absolute value, fixed decimals, thousands-grouped. */
+function grouped(v: number, decimals: number): string {
+  const [int, frac] = Math.abs(v).toFixed(decimals).split('.');
+  return group(int!) + (frac ? '.' + frac : '');
+}
 
 /** Money with a currency symbol and a typographic minus. */
 export function formatMoney(v: number, decimals: 0 | 2 = 0): string {
-  const neg = v < 0;
-  const fmt = decimals === 2 ? moneyFmt2 : moneyFmt;
-  return (neg ? MINUS : '') + '$' + fmt.format(Math.abs(v));
+  return (v < 0 ? MINUS : '') + '$' + grouped(v, decimals);
 }
 
 /** Signed money (leading + or −) for P&L columns. The sign is decided after
  * rounding, so a sub-unit value never renders as "−$0". */
 export function formatSignedMoney(v: number, decimals: 0 | 2 = 0): string {
-  const fmt = decimals === 2 ? moneyFmt2 : moneyFmt;
-  const magnitude = fmt.format(Math.abs(v));
+  const magnitude = grouped(v, decimals);
   const isZero = Number(magnitude.replace(/,/g, '')) === 0;
   const glyph = isZero ? '·' : v > 0 ? '+' : MINUS;
   return `${glyph}$${magnitude}`;
 }
 
-const compactFmt = new Intl.NumberFormat('en-US', {
-  notation: 'compact',
-  maximumFractionDigits: 1,
-});
+const COMPACT_UNITS: Array<[number, string]> = [
+  [1e12, 'T'],
+  [1e9, 'B'],
+  [1e6, 'M'],
+  [1e3, 'K'],
+];
 
-/** Compact size notation for order/quote sizes: 1200 → 1.2K. */
+/** Compact size notation for order and quote sizes: 1200 → 1.2K, 12000 → 12K. */
 export function formatSize(v: number): string {
-  if (Math.abs(v) < 1000) return String(Math.round(v));
-  return compactFmt.format(v);
+  const abs = Math.abs(v);
+  if (abs < 1000) return String(Math.round(v));
+  for (const [threshold, suffix] of COMPACT_UNITS) {
+    if (abs < threshold) continue;
+    const scaled = v / threshold;
+    // One decimal below 100, none above, trailing .0 trimmed — matches how
+    // size columns read on a real blotter.
+    const text =
+      Math.abs(scaled) >= 100
+        ? scaled.toFixed(0)
+        : scaled.toFixed(1).replace(/\.0$/, '');
+    return text + suffix;
+  }
+  return String(Math.round(v));
 }
-
-const intFmt = new Intl.NumberFormat('en-US');
 
 /** Grouped integer for volume and counters. */
 export function formatInt(v: number): string {
-  return intFmt.format(Math.round(v));
+  return (v < 0 ? MINUS : '') + grouped(v, 0);
 }
 
 /** Signed integer quantity with a typographic minus. */
 export function formatQty(v: number): string {
-  const neg = v < 0;
-  return (neg ? MINUS : '') + intFmt.format(Math.abs(v));
+  return (v < 0 ? MINUS : '') + grouped(v, 0);
 }
 
 /** Colour class for a signed money value, consistent with formatSignedMoney:

@@ -3,10 +3,13 @@ import {
   decimalsForTick,
   format32nds,
   formatChange,
+  formatInt,
   formatMoney,
   formatPercent,
   formatPrice,
+  formatQty,
   formatSignedMoney,
+  formatSize,
 } from './format.ts';
 
 describe('decimalsForTick', () => {
@@ -37,6 +40,38 @@ describe('formatPrice', () => {
   it('rounds decimals to tick precision', () => {
     expect(formatPrice(1.234567, 0.00001, 'decimal')).toBe('1.23457');
     expect(formatPrice(5732.25, 0.25, 'decimal')).toBe('5732.25');
+  });
+});
+
+describe('grouping and compact notation', () => {
+  it('groups thousands', () => {
+    expect(formatInt(0)).toBe('0');
+    expect(formatInt(999)).toBe('999');
+    expect(formatInt(1000)).toBe('1,000');
+    expect(formatInt(1234567)).toBe('1,234,567');
+    expect(formatInt(-1234567)).toBe('−1,234,567');
+    expect(formatQty(-1500)).toBe('−1,500');
+  });
+
+  it('renders compact sizes the way a blotter does', () => {
+    expect(formatSize(0)).toBe('0');
+    expect(formatSize(900)).toBe('900');
+    expect(formatSize(1000)).toBe('1K');
+    expect(formatSize(1200)).toBe('1.2K');
+    expect(formatSize(12000)).toBe('12K');
+    expect(formatSize(125800)).toBe('126K');
+    expect(formatSize(1234567)).toBe('1.2M');
+    expect(formatSize(-2500)).toBe('-2.5K');
+  });
+
+  // Regression: these formatters were once built on Intl.NumberFormat at module
+  // scope, which throws "Incorrect locale information provided" on runtimes with
+  // reduced ICU data — taking the whole app down at module evaluation. Output
+  // must depend on nothing but the input.
+  it('produces identical output regardless of host locale data', () => {
+    expect(formatMoney(1234567)).toBe('$1,234,567');
+    expect(formatMoney(1234.5, 2)).toBe('$1,234.50');
+    expect(formatSignedMoney(-9876543)).toBe('−$9,876,543');
   });
 });
 

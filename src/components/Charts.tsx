@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import uPlot from 'uplot';
 import { store } from '../store/marketStore.ts';
+import { formatInt } from '../domain/format.ts';
 
 function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
@@ -136,7 +137,7 @@ export function ThroughputChart(): React.JSX.Element {
     <div className="spark-wrap">
       <div className="spark">
         <span className="spark-caption">
-          Messages in/sec · {Math.round(t.msgsInPerSec).toLocaleString()}
+          Messages in/sec · {formatInt(t.msgsInPerSec)}
         </span>
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label="Messages in per second">
           <polyline points={polyline(msgs.current, W, H)} fill="none" stroke="var(--accent)" strokeWidth="1.5" />
@@ -149,8 +150,8 @@ export function ThroughputChart(): React.JSX.Element {
         </svg>
       </div>
       <div className="spark-caption">
-        Conflation {t.conflationRatio.toFixed(1)}:1 · {Math.round(t.msgsInPerSec).toLocaleString()} in over{' '}
-        {Math.round(t.rowsOutPerSec).toLocaleString()} out
+        Conflation {t.conflationRatio.toFixed(1)}:1 · {formatInt(t.msgsInPerSec)} in over{' '}
+        {formatInt(t.rowsOutPerSec)} out
       </div>
     </div>
   );

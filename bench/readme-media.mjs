@@ -17,15 +17,34 @@ const { PNG } = require('pngjs');
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs', 'media');
 const URL = process.env.README_MEDIA_URL || 'http://127.0.0.1:5180';
-const W = 1200;
-const H = 700;
+// Capture at the viewport the app is designed for (1600x940) so nothing is
+// clipped, then downscale for README width. deviceScaleFactor stays 1: GIF
+// palettes gain nothing from extra pixels and the files stay small.
+const W = 1600;
+const H = 940;
+const SCALE = 0.75; // 1200x705 in the README
 
 mkdirSync(OUT, { recursive: true });
+
+/** Nearest-neighbour box downscale — keeps text crisp for GIF quantisation. */
+function downscale(png, scale) {
+  const w = Math.round(png.width * scale);
+  const h = Math.round(png.height * scale);
+  const out = Buffer.alloc(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    const sy = Math.min(png.height - 1, Math.round(y / scale));
+    for (let x = 0; x < w; x++) {
+      const sx = Math.min(png.width - 1, Math.round(x / scale));
+      out.set(png.data.subarray((sy * png.width + sx) * 4, (sy * png.width + sx) * 4 + 4), (y * w + x) * 4);
+    }
+  }
+  return { width: w, height: h, data: out };
+}
 
 function encodeGif(frames, delayMs, path) {
   const gif = GIFEncoder();
   for (const buf of frames) {
-    const png = PNG.sync.read(buf);
+    const png = downscale(PNG.sync.read(buf), SCALE);
     const palette = quantize(png.data, 256);
     const index = applyPalette(png.data, palette);
     gif.writeFrame(index, png.width, png.height, { palette, delay: delayMs });
