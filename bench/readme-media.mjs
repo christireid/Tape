@@ -18,11 +18,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs', 'media');
 const URL = process.env.README_MEDIA_URL || 'http://127.0.0.1:5180';
 // Capture at the viewport the app is designed for (1600x940) so nothing is
-// clipped, then downscale for README width. deviceScaleFactor stays 1: GIF
-// palettes gain nothing from extra pixels and the files stay small.
+// clipped, then downscale for README width. A README is a shop window: GitHub
+// proxies every image on page open, so total weight is a feature. These settings
+// keep the whole set near 3 MB rather than 10 — the motion is the message, and
+// the crisp detail lives in the full-resolution hero screenshot.
 const W = 1600;
 const H = 940;
-const SCALE = 0.75; // 1200x705 in the README
+const SCALE = 0.55; // 880x517 in the README
+const PALETTE_COLORS = 32; // a dark, flat UI needs nothing near 256
 
 mkdirSync(OUT, { recursive: true });
 
@@ -45,7 +48,7 @@ function encodeGif(frames, delayMs, path) {
   const gif = GIFEncoder();
   for (const buf of frames) {
     const png = downscale(PNG.sync.read(buf), SCALE);
-    const palette = quantize(png.data, 256);
+    const palette = quantize(png.data, PALETTE_COLORS);
     const index = applyPalette(png.data, palette);
     gif.writeFrame(index, png.width, png.height, { palette, delay: delayMs });
   }
@@ -79,36 +82,36 @@ await page.getByRole('button', { name: /BUY EURUSD/ }).click();
 await page.waitForTimeout(3000);
 
 // ── GIF 1 · the live tape (dark, 8k msgs/sec) ────────────────────────────────
-encodeGif(await captureFrames(page, 28, 120), 12, join(OUT, 'live-tape.gif'));
+encodeGif(await captureFrames(page, 20, 150), 15, join(OUT, 'live-tape.gif'));
 
 // ── GIF 2 · 50k msgs/sec + engine switch ─────────────────────────────────────
 await page.getByLabel('Message rate').selectOption('50000');
 await page.waitForTimeout(1500);
-const f50 = await captureFrames(page, 14, 120);
+const f50 = await captureFrames(page, 11, 150);
 await page.getByRole('button', { name: 'Virtual', exact: true }).click();
 await page.waitForTimeout(400);
-f50.push(...(await captureFrames(page, 14, 120)));
-encodeGif(f50, 12, join(OUT, 'fifty-k.gif'));
+f50.push(...(await captureFrames(page, 11, 150)));
+encodeGif(f50, 15, join(OUT, 'fifty-k.gif'));
 await page.getByRole('button', { name: 'AG Grid', exact: true }).click();
 await page.getByLabel('Message rate').selectOption('8000');
 await page.waitForTimeout(1200);
 
 // ── GIF 3 · disconnect → stale gate → recovery ───────────────────────────────
-const fFault = await captureFrames(page, 6, 150);
+const fFault = await captureFrames(page, 4, 200);
 await page.keyboard.press('x');
-fFault.push(...(await captureFrames(page, 30, 250)));
-encodeGif(fFault, 20, join(OUT, 'fault-recovery.gif'));
+fFault.push(...(await captureFrames(page, 24, 300)));
+encodeGif(fFault, 25, join(OUT, 'fault-recovery.gif'));
 await page.waitForTimeout(2000);
 
 // ── GIF 4 · three themes × two densities, no remount ─────────────────────────
-const fTheme = await captureFrames(page, 5, 150);
+const fTheme = await captureFrames(page, 4, 180);
 for (const key of ['t', 't', 't', 'd']) {
   await page.keyboard.press(key);
   await page.waitForTimeout(250);
-  fTheme.push(...(await captureFrames(page, 5, 150)));
+  fTheme.push(...(await captureFrames(page, 4, 180)));
 }
 await page.keyboard.press('d');
-encodeGif(fTheme, 22, join(OUT, 'themes.gif'));
+encodeGif(fTheme, 26, join(OUT, 'themes.gif'));
 await page.waitForTimeout(500);
 
 // ── Stills · light and high-contrast themes ──────────────────────────────────

@@ -17,6 +17,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:5180',
     viewport: { width: 1600, height: 940 },
+    locale: 'en-US',
     trace: 'off',
   },
   projects: [

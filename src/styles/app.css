@@ -88,6 +88,10 @@ button {
 .col-side {
   flex: 0 0 340px;
   width: 340px;
+  /* The side column scrolls as a unit. Without this the ticket is the only
+     scrollable child, so when the confirm gate appears its extra height
+     squeezes the submit button under the panel below and clips it. */
+  overflow-y: auto;
 }
 /* Columns whose panels must fill the track — a panel whose body is an
    absolutely-positioned canvas has no intrinsic height and would otherwise
@@ -511,7 +515,9 @@ select,
   flex-direction: column;
   gap: var(--sp-8);
   padding: var(--sp-12);
-  overflow: auto;
+  /* Natural height: the ticket must never be compressed to the point of
+     hiding its own submit button. Growth is absorbed by the column's scroll. */
+  flex: 0 0 auto;
 }
 .ticket-strip {
   display: flex;

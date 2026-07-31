@@ -1,3 +1,6 @@
+// First import: normalises a malformed browser locale before any vendor module
+// evaluates and calls Intl with it. See locale-guard.ts.
+import './locale-guard.ts';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'ag-grid-community/styles/ag-grid.css';

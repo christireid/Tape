@@ -196,7 +196,9 @@ async function main() {
     executablePath: process.env.PW_CHROMIUM_PATH || undefined,
   });
   try {
-    const page = await browser.newPage({ viewport: { width: 1600, height: 940 } });
+    // Pin the locale: harnesses must be deterministic, and a runner's POSIX
+    // locale must not be what decides whether the suite passes.
+    const page = await browser.newPage({ viewport: { width: 1600, height: 940 }, locale: 'en-US' });
     await domChecks(page);
   } finally {
     await browser.close();
